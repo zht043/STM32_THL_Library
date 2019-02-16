@@ -120,6 +120,10 @@ void i2cSend_IT(I2C* instance, uint16_t Mode) {
 	instance->TxStatus = InProcess;
 }
 
+
+
+
+
 void i2cSend_DMA(I2C* instance, uint16_t Mode) {
 	//check if the previous transmission is completed
 	if(instance->TxStatus == InProcess) return;
@@ -140,6 +144,29 @@ void i2cSend_DMA(I2C* instance, uint16_t Mode) {
 	instance->TxStatus = InProcess;
 }
 
+char* i2cRead_DMA(I2C* instance, uint16_t Mode, uint16_t size) {
+	//check if the previous reception is completed
+	if(instance->RxStatus == InProcess) return instance->RxBuffer;
+	HAL_StatusTypeDef Status;
+	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
+
+	if(Mode != SlaveMode)
+			//The Mode variable here in MasterMode includes devAddress
+			Status = HAL_I2C_Master_Receive_DMA(instance->hi2c, Mode /*Actually devAddress*/,
+				                       (uint8_t*)instance->RxBuffer, size);
+		else
+			Status =  HAL_I2C_Slave_Receive_DMA(instance->hi2c, (uint8_t*)instance->RxBuffer,
+											 size);
+	if(Status == HAL_ERROR) {
+		instance->RxStatus = Error;
+		throwException("THL_I2C.c: i2cRead_DMA() | Error");
+		return instance->RxBuffer;
+	}
+	instance->RxStatus = InProcess;
+	return instance->RxBuffer;
+}
+
+
 void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	for(int i = 0; i < numActiveI2Cs; i++) {
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
@@ -148,6 +175,16 @@ void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 		}
 	}
 }
+
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+	for(int i = 0; i < numActiveI2Cs; i++) {
+		if(ActiveI2Cs[i]->hi2c == hi2c) {
+			IT_CallBack_I2cRC(ActiveI2Cs[i]);
+			ActiveI2Cs[i]->RxStatus = Completed;
+		}
+	}
+}
+
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	for(int i = 0; i < numActiveI2Cs; i++) {
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
@@ -157,9 +194,23 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	}
 }
 
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+	for(int i = 0; i < numActiveI2Cs; i++) {
+		if(ActiveI2Cs[i]->hi2c == hi2c) {
+			IT_CallBack_I2cRC(ActiveI2Cs[i]);
+			ActiveI2Cs[i]->RxStatus = Completed;
+		}
+	}
+}
+
 __weak void IT_CallBack_I2cTC(I2C* instance){
 	 UNUSED(instance);
 }
+
+__weak void IT_CallBack_I2cRC(I2C* instance){
+	 UNUSED(instance);
+}
+
 
 #endif
 

@@ -11,6 +11,7 @@
 
 #define NotReady 0
 #define Ready 1
+
 #define InProcess 2
 #define Completed 3
 #define TimeOut 4

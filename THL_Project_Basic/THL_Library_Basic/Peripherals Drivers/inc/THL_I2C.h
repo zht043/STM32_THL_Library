@@ -41,14 +41,20 @@ char* i2cRead(I2C* instance, uint16_t Mode, uint16_t size);
 
 
 void i2cSend_IT(I2C* instance, uint16_t Mode);
+
 void i2cSend_DMA(I2C* instance, uint16_t Mode);
+char* i2cRead_DMA(I2C* instance, uint16_t Mode, uint16_t size);
 
 
 void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c);
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c);
+
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c);
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c);
 
 
 __weak void IT_CallBack_I2cTC(I2C* instance);
+__weak void IT_CallBack_I2cRC(I2C* instance);
 
 
 #endif
