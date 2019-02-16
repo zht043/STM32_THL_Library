@@ -23,6 +23,7 @@ void testPrints(void) {
 	print(Terminal,"\r**************************************************************\n\r");
 	print(Terminal,"\r**************************************************************\n\r");
 	print(Terminal,"\r**************************************************************\n\r");
+
 	print(Terminal,"\r[Atollic Truestudio - C/C++] \n\r");
 
 	print(Terminal,"\n\r=============Begin:Test Basic Outputtings==================\r");
@@ -118,18 +119,18 @@ void testScans(void) {
 		print(Terminal, "\n\rTest[readWord]\r\n");
 		print(Terminal,"\r[*****]Please enter two words (space-sperated) below\r\n");
 		print(Terminal,"\r>>>>>>>>>>>>>>>>>>>\r\n");
-		char one_word[RxBuffer_Size];
+		char one_word[USART_RxBuffer_Size];
 		readWord(Terminal, one_word);
-		char another_word[RxBuffer_Size];
+		char another_word[USART_RxBuffer_Size];
 		readWord(Terminal, another_word);
 		print(Terminal,"\r<<<<<<<<<<<<<<<<<<<\r\n");
 		print(Terminal, "\r[Echo]:\r\n\r%s\r\n", one_word);
 		print(Terminal, "\r%s\r\n", another_word);
 
 		print(Terminal, "\n\rTest[readLine]\r\n");
-		print(Terminal,"\r[*****]Please enter anything below (no more than [RxBuffer_Size] number of characters)\r\n");
+		print(Terminal,"\r[*****]Please enter anything below (no more than [USART_RxBuffer_Size] number of characters)\r\n");
 		print(Terminal,"\r>>>>>>>>>>>>>>>>>>>\r\n");
-		char one_line[RxBuffer_Size];
+		char one_line[USART_RxBuffer_Size];
 		readLine(Terminal, one_line);
 		print(Terminal,"\r<<<<<<<<<<<<<<<<<<<\r\n");
 		print(Terminal, "\r[Echo]:\r\n\r%s\r\n", one_line);
@@ -146,7 +147,7 @@ void testScans(void) {
 		printf_u("\r%s\r\n", another_word);
 		
 		printf_u("\n\rTest[readLinef]\r\n");
-		printf_u("\r[*****]Please enter anything below (no more than [RxBuffer_Size] number of characters)\r\n");
+		printf_u("\r[*****]Please enter anything below (no more than [USART_RxBuffer_Size] number of characters)\r\n");
 		printf_u("\r>>>>>>>>>>>>>>>>>>>\r\n");
 		readLinef(one_line);
 		printf_u("\r<<<<<<<<<<<<<<<<<<<\r\n");
@@ -166,7 +167,7 @@ void testScans(void) {
 		print(Terminal, "\r[Sum]: %d\r\n", A+B);
 		
 		print(Terminal, "\r[*****]Please enter two strings (space-sperated) below\r\n");
-		char string1[RxBuffer_Size], string2[RxBuffer_Size];
+		char string1[USART_RxBuffer_Size], string2[USART_RxBuffer_Size];
 		scan(Terminal, "%s %s", string1, string2);
 		print(Terminal, "\r[Echo]:\r\n");
 		print(Terminal, "\r%s\r\n",string1);
@@ -230,10 +231,10 @@ void testUsart(void) {
 	 *If wanting to expand this size limit when there is 
 	 *enough RAM size, redefine the macros with the following code:
 	 *
-	 *#undef TxBuffer_Size
-	 *#undef RxBuffer_Size
-	 *#define TxBuffer_Size ???
-     *#define RxBuffer_Size ???
+	 *#undef USART_TxBuffer_Size
+	 *#undef USART_RxBuffer_Size
+	 *#define USART_TxBuffer_Size ???
+     *#define USART_RxBuffer_Size ???
 	 *
 	 *Replace ??? with the number of desire buffer sizes*/
 	Led = newGPIO(&led_pin, LD2_GPIO_Port, LD2_Pin);

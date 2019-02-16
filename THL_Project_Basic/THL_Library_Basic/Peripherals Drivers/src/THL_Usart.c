@@ -23,19 +23,19 @@ USART DefaultUSART;
   *Treated it as Pseudo-Constructor
   *Note: no memory allocation occurs
   */
-USART *newUSART(USART* obj, UART_HandleTypeDef *huart) {
-	obj->huart = huart;
-	obj->TxTimeOut = Default_TxTimeOut;
-	obj->RxTimeOut = Default_RxTimeOut;
-	obj->TxStatus = Ready;
-	obj->RxStatus = Ready;
+USART *newUSART(USART* instance, UART_HandleTypeDef *huart) {
+	instance->huart = huart;
+	instance->TxTimeOut = USART_Default_TxTimeOut;
+	instance->RxTimeOut = USART_Default_RxTimeOut;
+	instance->TxStatus = Ready;
+	instance->RxStatus = Ready;
 	for(int i = 0; i < numActiveUSARTs; i++) 
 		if(ActiveUSARTs[i]->huart == huart) {
-			ActiveUSARTs[i] = obj;
-			return obj;
+			ActiveUSARTs[i] = instance;
+			return instance;
 		}
-	ActiveUSARTs[numActiveUSARTs++] = obj;
-	return obj;
+	ActiveUSARTs[numActiveUSARTs++] = instance;
+	return instance;
 }
 
 /**Pseudo-Constructor for Default/Main USART
@@ -49,35 +49,51 @@ USART *newMainUSART(UART_HandleTypeDef *huart) {
 
 
 /*==============================Transmission===============================*/
-void usartSend(USART* obj) {
+void usartSend(USART* instance) {
 	HAL_StatusTypeDef Status;
-	Status = HAL_UART_Transmit(obj->huart, (uint8_t*)obj->TxBuffer, strlen(obj->TxBuffer), obj->TxTimeOut);
-	if(Status == HAL_BUSY) obj->TxStatus = InProcess;
+	Status = HAL_UART_Transmit(instance->huart, (uint8_t*)instance->TxBuffer, strlen(instance->TxBuffer), instance->TxTimeOut);
+	if(Status == HAL_BUSY) instance->TxStatus = InProcess;
 	else if(Status == HAL_TIMEOUT) {
-		obj->TxStatus = TimeOut;
+		instance->TxStatus = TimeOut;
 		//Unlock Usart
-		__HAL_UNLOCK(obj->huart);
-		obj->huart->gState = HAL_UART_STATE_READY; 	
+		__HAL_UNLOCK(instance->huart);
+		instance->huart->gState = HAL_UART_STATE_READY;
 		
 		throwException("THL_Usart.c: usartSend() | TimeOut");
 	}
 	else if(Status == HAL_ERROR) {
-		obj->TxStatus = Error;
+		instance->TxStatus = Error;
 		throwException("THL_Usart.c: usartSend() | Error");
 	}
-	else if(Status == HAL_OK) obj->TxStatus = Completed;
+	else if(Status == HAL_OK) instance->TxStatus = Completed;
 }
-void usartSend_DMA(USART* obj) {
+
+
+//Test Me!!!
+void usartSend_IT(USART* instance) {
 	//check if the previous transmission is completed
-	if(obj->TxStatus == InProcess) return;
+	if(instance->TxStatus == InProcess) return;
 	HAL_StatusTypeDef Status;
-	Status = HAL_UART_Transmit_DMA(obj->huart, (uint8_t*)obj->TxBuffer, strlen(obj->TxBuffer));
+	Status = HAL_UART_Transmit_IT(instance->huart, (uint8_t*)instance->TxBuffer, strlen(instance->TxBuffer));
 	if(Status == HAL_ERROR) {
-		obj->TxStatus = Error;
+		instance->TxStatus = Error;
+		throwException("THL_Usart.c: usartSend_IT() | Error");
+		return;
+	}
+	instance->TxStatus = InProcess;
+}
+
+void usartSend_DMA(USART* instance) {
+	//check if the previous transmission is completed
+	if(instance->TxStatus == InProcess) return;
+	HAL_StatusTypeDef Status;
+	Status = HAL_UART_Transmit_DMA(instance->huart, (uint8_t*)instance->TxBuffer, strlen(instance->TxBuffer));
+	if(Status == HAL_ERROR) {
+		instance->TxStatus = Error;
 		throwException("THL_Usart.c: usartSend_DMA() | Error");
 		return;
 	}
-	obj->TxStatus = InProcess;
+	instance->TxStatus = InProcess;
 } 
 /** Interrupt handler call back function
   */
@@ -94,26 +110,47 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
   *interrupt is triggered by usart completing 
   *tranfering data
   */
-__weak void IT_CallBack_UsartTC(USART* obj){
-	 UNUSED(obj);
+__weak void IT_CallBack_UsartTC(USART* instance){
+	 UNUSED(instance);
 }
 
-void print(USART* obj, Format_Param) {
-	formatStrings(obj->TxBuffer);
-	usartSend(obj);
+void print(USART* instance, Format_Param) {
+	formatStrings(instance->TxBuffer);
+	usartSend(instance);
 }
 void printf_u(Format_Param) {
 	formatStrings(DefaultUSART.TxBuffer);
 	usartSend(&DefaultUSART);
 }
+
+
+//Test Me !!!
+/** Non-Blocking mode print with interrupt
+  */
+void print_IT(USART* instance, Format_Param) {
+	//check if the previous transmission is completed
+	if(instance->TxStatus == InProcess) return;
+	formatStrings(instance->TxBuffer);
+	usartSend_IT(instance);
+}
 /** Non-Blocking mode print with dma
   */
-void print_DMA(USART* obj, Format_Param) {
+void print_DMA(USART* instance, Format_Param) {
 	//check if the previous transmission is completed
-	if(obj->TxStatus == InProcess) return;
-	formatStrings(obj->TxBuffer);
-	usartSend_DMA(obj);
+	if(instance->TxStatus == InProcess) return;
+	formatStrings(instance->TxBuffer);
+	usartSend_DMA(instance);
 }
+
+//Test Me !!!
+void printf_IT(Format_Param) {
+	//check if the previous transmission is completed
+	if(DefaultUSART.TxStatus == InProcess) return;
+	formatStrings(DefaultUSART.TxBuffer);
+	usartSend_IT(&DefaultUSART);
+}
+
+
 void printf_DMA(Format_Param) {
 	//check if the previous transmission is completed
 	if(DefaultUSART.TxStatus == InProcess) return;
@@ -124,11 +161,11 @@ void printf_DMA(Format_Param) {
   * printing with dma is 
   * generally faster than with CPU
   */
-void fastPrint(USART* obj, const char*format, ...) {
-	print_DMA(obj, format);
+void fastPrint(USART* instance, const char*format, ...) {
+	print_DMA(instance, format);
 	uint32_t fP_t0 = millis();
-	while(obj->TxStatus != Completed)
-		if(millis() - fP_t0 > obj->TxTimeOut) break;
+	while(instance->TxStatus != Completed)
+		if(millis() - fP_t0 > instance->TxTimeOut) break;
 }
 void fastPrintf(Format_Param) {
 	printf_DMA(format);
@@ -141,40 +178,61 @@ void fastPrintf(Format_Param) {
 
 
 /*================================Reception================================*/
-char* usartRead(USART* obj, uint16_t size) {
+char* usartRead(USART* instance, uint16_t size) {
 	HAL_StatusTypeDef Status;
-	memset(obj->RxBuffer, 0, strlen(obj->RxBuffer));
-	Status = HAL_UART_Receive(obj->huart, (uint8_t*)obj->RxBuffer, size, obj->RxTimeOut);
-	if(Status == HAL_BUSY) obj->RxStatus = InProcess;
+	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
+	Status = HAL_UART_Receive(instance->huart, (uint8_t*)instance->RxBuffer, size, instance->RxTimeOut);
+	if(Status == HAL_BUSY) instance->RxStatus = InProcess;
 	else if(Status == HAL_TIMEOUT) {
-		obj->RxStatus = TimeOut;
+		instance->RxStatus = TimeOut;
 		//Unlock Usart
-		__HAL_UNLOCK(obj->huart);
-		obj->huart->gState = HAL_UART_STATE_READY; 	
+		__HAL_UNLOCK(instance->huart);
+		instance->huart->gState = HAL_UART_STATE_READY;
 		
 		throwException("THL_Usart.c: usartRead() | TimeOut");
 	}
 	else if(Status == HAL_ERROR) {
-		obj->RxStatus = Error;
+		instance->RxStatus = Error;
 		throwException("THL_Usart.c: usartRead() | Error");
 	}
-	else if(Status == HAL_OK) obj->RxStatus = Completed;
-	return obj->RxBuffer;
+	else if(Status == HAL_OK) instance->RxStatus = Completed;
+	return instance->RxBuffer;
 }
-char* usartRead_DMA(USART* obj, uint16_t size) {
+
+
+//Test Me!!!
+char* usartRead_IT(USART* instance, uint16_t size) {
 	//check if the previous reception is completed
-	if(obj->RxStatus == InProcess) return obj->RxBuffer;
+	if(instance->RxStatus == InProcess) return instance->RxBuffer;
 	HAL_StatusTypeDef Status;
-	memset(obj->RxBuffer, 0, strlen(obj->RxBuffer));
-	Status = HAL_UART_Receive_DMA(obj->huart, (uint8_t*)obj->RxBuffer, size);
+	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
+	Status = HAL_UART_Receive_IT(instance->huart, (uint8_t*)instance->RxBuffer, size);
 	if(Status == HAL_ERROR) {
-		obj->RxStatus = Error;
-		throwException("THL_Usart.c: usartRead_DMA() | Error");
-		return obj->RxBuffer;
+		instance->RxStatus = Error;
+		throwException("THL_Usart.c: usartRead_IT() | Error");
+		return instance->RxBuffer;
 	}
-	obj->RxStatus = InProcess;
-	return obj->RxBuffer;
+	instance->RxStatus = InProcess;
+	return instance->RxBuffer;
+}
+
+char* usartRead_DMA(USART* instance, uint16_t size) {
+	//check if the previous reception is completed
+	if(instance->RxStatus == InProcess) return instance->RxBuffer;
+	HAL_StatusTypeDef Status;
+	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
+	Status = HAL_UART_Receive_DMA(instance->huart, (uint8_t*)instance->RxBuffer, size);
+	if(Status == HAL_ERROR) {
+		instance->RxStatus = Error;
+		throwException("THL_Usart.c: usartRead_DMA() | Error");
+		return instance->RxBuffer;
+	}
+	instance->RxStatus = InProcess;
+	return instance->RxBuffer;
 } 
+
+
+
 /** Interrupt handler call back function
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
@@ -186,23 +244,23 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	}
 }
 
-__weak void IT_CallBack_UsartRC(USART* obj){
-	 UNUSED(obj);
+__weak void IT_CallBack_UsartRC(USART* instance){
+	 UNUSED(instance);
 }
 
 
-void readWord(USART* obj, char* str) {
+void readWord(USART* instance, char* str) {
 	int i = 0;
-	str[i] = usartRead(obj, 1)[0];
+	str[i] = usartRead(instance, 1)[0];
 	while(str[i] != ' ' && str[i] != '\r' && str[i] != '\n') 
-		str[++i] = usartRead(obj, 1)[0];
+		str[++i] = usartRead(instance, 1)[0];
 	str[i] = '\0';
 }
-void readLine(USART* obj, char* str) {
+void readLine(USART* instance, char* str) {
 	int i = 0;
-	str[i] = usartRead(obj, 1)[0];
+	str[i] = usartRead(instance, 1)[0];
 	while(str[i] != '\r' && str[i] != '\n') 
-		str[++i] = usartRead(obj, 1)[0];
+		str[++i] = usartRead(instance, 1)[0];
 	str[i] = '\0';
 }
 
@@ -220,9 +278,9 @@ void readLinef(char* str) {
 		str[++i] = usartRead(&DefaultUSART, 1)[0];
 	str[i] = '\0';
 }
-int scan(USART* obj, Format_Param) {
-	char scan_str[RxBuffer_Size];
-	readLine(obj, scan_str);
+int scan(USART* instance, Format_Param) {
+	char scan_str[USART_RxBuffer_Size];
+	readLine(instance, scan_str);
 	va_list args; 
     va_start(args, format); 
 	int rtn = vsscanf(scan_str, format, args);
@@ -235,7 +293,7 @@ int scan(USART* obj, Format_Param) {
  *Here, 'u' in scanf_u stands for usart.	
  */
 int scanf_u(Format_Param) {
-	char scanf_str[RxBuffer_Size];
+	char scanf_str[USART_RxBuffer_Size];
 	readLine(&DefaultUSART, scanf_str);
 	va_list args; 
     va_start(args, format); 

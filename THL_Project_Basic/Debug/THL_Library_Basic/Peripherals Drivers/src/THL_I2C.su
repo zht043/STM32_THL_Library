@@ -1,0 +1,7 @@
+THL_I2C.c:24:6:newI2C	4	static
+THL_I2C.c:44:6:i2cSend	32	static
+THL_I2C.c:72:7:i2cRead	32	static
+THL_I2C.c:103:6:i2cSend_IT	24	static
+THL_I2C.c:140:13:IT_CallBack_I2cTC	0	static
+THL_I2C.c:123:6:HAL_I2C_MasterTxCpltCallback	16	static
+THL_I2C.c:131:6:HAL_I2C_SlaveTxCpltCallback	16	static
