@@ -1,4 +1,0 @@
-THL_Portability.c:8:11:USARTx	0	static
-THL_Portability.c:20:12:APBx_Div	0	static
-THL_Portability.c:47:11:TIMx	0	static
-THL_Portability.c:74:7:getChipModelType	0	static

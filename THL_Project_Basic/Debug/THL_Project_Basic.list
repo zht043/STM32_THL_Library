@@ -17,31 +17,31 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   6 .data         0000067c  20000000  08008560  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  7 .bss          00000834  2000067c  08008bdc  0002067c  2**2
+  7 .bss          00000844  2000067c  08008bdc  0002067c  2**2
                   ALLOC
-  8 ._user_heap_stack 00000600  20000eb0  08008bdc  00020eb0  2**0
+  8 ._user_heap_stack 00000600  20000ec0  08008bdc  00020ec0  2**0
                   ALLOC
   9 .ARM.attributes 00000030  00000000  00000000  0002067c  2**0
                   CONTENTS, READONLY
- 10 .debug_info   0002630a  00000000  00000000  000206ac  2**0
+ 10 .debug_info   0002644e  00000000  00000000  000206ac  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_abbrev 00004010  00000000  00000000  000469b6  2**0
+ 11 .debug_abbrev 0000403b  00000000  00000000  00046afa  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    0000ede8  00000000  00000000  0004a9c6  2**0
+ 12 .debug_loc    0000efe6  00000000  00000000  0004ab35  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_aranges 000014a0  00000000  00000000  000597b0  2**3
+ 13 .debug_aranges 000014b0  00000000  00000000  00059b20  2**3
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_ranges 00001398  00000000  00000000  0005ac50  2**3
+ 14 .debug_ranges 000013a8  00000000  00000000  0005afd0  2**3
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_line   0000a8f2  00000000  00000000  0005bfe8  2**0
+ 15 .debug_line   0000a8b2  00000000  00000000  0005c378  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_str    00005c1f  00000000  00000000  000668da  2**0
+ 16 .debug_str    00005bf8  00000000  00000000  00066c2a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .comment      0000007c  00000000  00000000  0006c4f9  2**0
+ 17 .comment      0000007c  00000000  00000000  0006c822  2**0
                   CONTENTS, READONLY
- 18 .debug_frame  0000469c  00000000  00000000  0006c578  2**2
+ 18 .debug_frame  000046e4  00000000  00000000  0006c8a0  2**2
                   CONTENTS, READONLY, DEBUGGING
- 19 .stabstr      000000df  00000000  00000000  00070c14  2**0
+ 19 .stabstr      000000df  00000000  00000000  00070f84  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -3944,7 +3944,7 @@ static HAL_StatusTypeDef I2C_SlaveReceive_BTF(I2C_HandleTypeDef *hi2c)
  8001fe8:	2328      	movs	r3, #40	; 0x28
  8001fea:	f880 303d 	strb.w	r3, [r0, #61]	; 0x3d
       HAL_I2C_SlaveTxCpltCallback(hi2c);
- 8001fee:	f003 f843 	bl	8005078 <HAL_I2C_SlaveTxCpltCallback>
+ 8001fee:	f003 f83b 	bl	8005068 <HAL_I2C_SlaveTxCpltCallback>
  8001ff2:	e7f0      	b.n	8001fd6 <I2C_SlaveTransmit_TXE+0x2e>
 }
  8001ff4:	2000      	movs	r0, #0
@@ -3994,7 +3994,7 @@ static HAL_StatusTypeDef I2C_SlaveReceive_BTF(I2C_HandleTypeDef *hi2c)
  8002038:	2328      	movs	r3, #40	; 0x28
  800203a:	f880 303d 	strb.w	r3, [r0, #61]	; 0x3d
       HAL_I2C_SlaveRxCpltCallback(hi2c);
- 800203e:	f003 f859 	bl	80050f4 <HAL_I2C_SlaveRxCpltCallback>
+ 800203e:	f003 f851 	bl	80050e4 <HAL_I2C_SlaveRxCpltCallback>
  8002042:	e7f0      	b.n	8002026 <I2C_SlaveReceive_RXNE+0x2e>
 
 08002044 <HAL_I2C_AddrCallback>:
@@ -4157,7 +4157,7 @@ static HAL_StatusTypeDef I2C_Slave_AF(I2C_HandleTypeDef *hi2c)
  80020f4:	f423 6380 	bic.w	r3, r3, #1024	; 0x400
  80020f8:	6013      	str	r3, [r2, #0]
     HAL_I2C_SlaveTxCpltCallback(hi2c);
- 80020fa:	f002 ffbd 	bl	8005078 <HAL_I2C_SlaveTxCpltCallback>
+ 80020fa:	f002 ffb5 	bl	8005068 <HAL_I2C_SlaveTxCpltCallback>
  80020fe:	e7c6      	b.n	800208e <I2C_Slave_AF+0x1e>
  8002100:	ffff0000 	.word	0xffff0000
 
@@ -4221,7 +4221,7 @@ static HAL_StatusTypeDef I2C_Slave_AF(I2C_HandleTypeDef *hi2c)
  8002160:	2300      	movs	r3, #0
  8002162:	f880 303e 	strb.w	r3, [r0, #62]	; 0x3e
         HAL_I2C_MasterTxCpltCallback(hi2c);
- 8002166:	f002 ff69 	bl	800503c <HAL_I2C_MasterTxCpltCallback>
+ 8002166:	f002 ff61 	bl	800502c <HAL_I2C_MasterTxCpltCallback>
  800216a:	e7dc      	b.n	8002126 <I2C_MasterTransmit_TXE+0x20>
       __HAL_I2C_DISABLE_IT(hi2c, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
  800216c:	6802      	ldr	r2, [r0, #0]
@@ -4238,7 +4238,7 @@ static HAL_StatusTypeDef I2C_Slave_AF(I2C_HandleTypeDef *hi2c)
  8002180:	2320      	movs	r3, #32
  8002182:	f880 303d 	strb.w	r3, [r0, #61]	; 0x3d
       HAL_I2C_MasterTxCpltCallback(hi2c);
- 8002186:	f002 ff59 	bl	800503c <HAL_I2C_MasterTxCpltCallback>
+ 8002186:	f002 ff51 	bl	800502c <HAL_I2C_MasterTxCpltCallback>
  800218a:	e7cc      	b.n	8002126 <I2C_MasterTransmit_TXE+0x20>
         hi2c->Mode = HAL_I2C_MODE_NONE;
  800218c:	2300      	movs	r3, #0
@@ -4403,7 +4403,7 @@ static HAL_StatusTypeDef I2C_Slave_AF(I2C_HandleTypeDef *hi2c)
  800229e:	2300      	movs	r3, #0
  80022a0:	f880 303e 	strb.w	r3, [r0, #62]	; 0x3e
           HAL_I2C_MasterTxCpltCallback(hi2c);
- 80022a4:	f002 feca 	bl	800503c <HAL_I2C_MasterTxCpltCallback>
+ 80022a4:	f002 fec2 	bl	800502c <HAL_I2C_MasterTxCpltCallback>
  80022a8:	e7d9      	b.n	800225e <I2C_MasterTransmit_BTF+0xe>
       hi2c->Instance->DR = (*hi2c->pBuffPtr++);
  80022aa:	6802      	ldr	r2, [r0, #0]
@@ -4434,7 +4434,7 @@ static HAL_StatusTypeDef I2C_Slave_AF(I2C_HandleTypeDef *hi2c)
  80022d6:	2320      	movs	r3, #32
  80022d8:	f880 303d 	strb.w	r3, [r0, #61]	; 0x3d
         HAL_I2C_MasterTxCpltCallback(hi2c);
- 80022dc:	f002 feae 	bl	800503c <HAL_I2C_MasterTxCpltCallback>
+ 80022dc:	f002 fea6 	bl	800502c <HAL_I2C_MasterTxCpltCallback>
  80022e0:	e7bd      	b.n	800225e <I2C_MasterTransmit_BTF+0xe>
           hi2c->Mode = HAL_I2C_MODE_NONE;
  80022e2:	2300      	movs	r3, #0
@@ -4529,7 +4529,7 @@ static HAL_StatusTypeDef I2C_Slave_AF(I2C_HandleTypeDef *hi2c)
  8002374:	2300      	movs	r3, #0
  8002376:	f880 303e 	strb.w	r3, [r0, #62]	; 0x3e
         HAL_I2C_MasterRxCpltCallback(hi2c);
- 800237a:	f002 fe9d 	bl	80050b8 <HAL_I2C_MasterRxCpltCallback>
+ 800237a:	f002 fe95 	bl	80050a8 <HAL_I2C_MasterRxCpltCallback>
  800237e:	e7bd      	b.n	80022fc <I2C_MasterReceive_RXNE+0xc>
         hi2c->Mode = HAL_I2C_MODE_NONE;
  8002380:	2300      	movs	r3, #0
@@ -4672,7 +4672,7 @@ static HAL_StatusTypeDef I2C_Slave_AF(I2C_HandleTypeDef *hi2c)
  800246a:	2300      	movs	r3, #0
  800246c:	f880 303e 	strb.w	r3, [r0, #62]	; 0x3e
       HAL_I2C_MasterRxCpltCallback(hi2c);
- 8002470:	f002 fe22 	bl	80050b8 <HAL_I2C_MasterRxCpltCallback>
+ 8002470:	f002 fe1a 	bl	80050a8 <HAL_I2C_MasterRxCpltCallback>
  8002474:	e7a3      	b.n	80023be <I2C_MasterReceive_BTF+0x32>
       hi2c->Instance->CR1 &= ~I2C_CR1_ACK;
  8002476:	6802      	ldr	r2, [r0, #0]
@@ -4794,7 +4794,7 @@ static void I2C_DMAError(DMA_HandleTypeDef *hdma)
  8002526:	2300      	movs	r3, #0
  8002528:	f880 303e 	strb.w	r3, [r0, #62]	; 0x3e
         HAL_I2C_MasterRxCpltCallback(hi2c);
- 800252c:	f002 fdc4 	bl	80050b8 <HAL_I2C_MasterRxCpltCallback>
+ 800252c:	f002 fdbc 	bl	80050a8 <HAL_I2C_MasterRxCpltCallback>
  8002530:	bd08      	pop	{r3, pc}
   if((CurrentState == HAL_I2C_STATE_BUSY_TX) || ((CurrentState == HAL_I2C_STATE_BUSY_RX) && (CurrentMode == HAL_I2C_MODE_SLAVE))) 
  8002532:	2a20      	cmp	r2, #32
@@ -5120,7 +5120,7 @@ static void I2C_DMAError(DMA_HandleTypeDef *hdma)
         hi2c->Mode = HAL_I2C_MODE_NONE;
  8002776:	f880 303e 	strb.w	r3, [r0, #62]	; 0x3e
         HAL_I2C_SlaveRxCpltCallback(hi2c);
- 800277a:	f002 fcbb 	bl	80050f4 <HAL_I2C_SlaveRxCpltCallback>
+ 800277a:	f002 fcb3 	bl	80050e4 <HAL_I2C_SlaveRxCpltCallback>
  800277e:	e013      	b.n	80027a8 <I2C_Slave_STOPF+0xf8>
       hi2c->XferCount = __HAL_DMA_GET_COUNTER(hi2c->hdmarx);
  8002780:	6b82      	ldr	r2, [r0, #56]	; 0x38
@@ -10001,7 +10001,7 @@ static void MX_GPIO_Init(void)
   MX_ADC1_Init();
  800467a:	f7ff ff53 	bl	8004524 <MX_ADC1_Init>
   THL_main();
- 800467e:	f000 fc3d 	bl	8004efc <THL_main>
+ 800467e:	f000 fd4f 	bl	8005120 <THL_main>
  8004682:	e7fe      	b.n	8004682 <main+0x32>
 
 08004684 <Error_Handler>:
@@ -11331,7 +11331,7 @@ void IT_CallBack_UsartTC(USART* Device) {
 	turnOn(Led);
  8004dce:	4b02      	ldr	r3, [pc, #8]	; (8004dd8 <IT_CallBack_UsartTC+0xc>)
  8004dd0:	6818      	ldr	r0, [r3, #0]
- 8004dd2:	f000 f8a8 	bl	8004f26 <turnOn>
+ 8004dd2:	f000 f8a0 	bl	8004f16 <turnOn>
  8004dd6:	bd08      	pop	{r3, pc}
  8004dd8:	20000c60 	.word	0x20000c60
 
@@ -11351,21 +11351,21 @@ void setup(void) {
 	i2cBus = newI2C(&i2cBusMem ,&hi2c1);
  8004de8:	490c      	ldr	r1, [pc, #48]	; (8004e1c <setup+0x40>)
  8004dea:	480d      	ldr	r0, [pc, #52]	; (8004e20 <setup+0x44>)
- 8004dec:	f000 f8c2 	bl	8004f74 <newI2C>
+ 8004dec:	f000 f8ba 	bl	8004f64 <newI2C>
  8004df0:	4b0c      	ldr	r3, [pc, #48]	; (8004e24 <setup+0x48>)
  8004df2:	6018      	str	r0, [r3, #0]
 	led = newGPIO(&ledMem, LD2_GPIO_Port, LD2_Pin);
  8004df4:	2220      	movs	r2, #32
  8004df6:	490c      	ldr	r1, [pc, #48]	; (8004e28 <setup+0x4c>)
  8004df8:	480c      	ldr	r0, [pc, #48]	; (8004e2c <setup+0x50>)
- 8004dfa:	f000 f887 	bl	8004f0c <newGPIO>
+ 8004dfa:	f000 f87f 	bl	8004efc <newGPIO>
  8004dfe:	4b0c      	ldr	r3, [pc, #48]	; (8004e30 <setup+0x54>)
  8004e00:	6018      	str	r0, [r3, #0]
 	button = newGPIO(&buttonMem, B1_GPIO_Port, B1_Pin);
  8004e02:	f44f 5200 	mov.w	r2, #8192	; 0x2000
  8004e06:	490b      	ldr	r1, [pc, #44]	; (8004e34 <setup+0x58>)
  8004e08:	480b      	ldr	r0, [pc, #44]	; (8004e38 <setup+0x5c>)
- 8004e0a:	f000 f87f 	bl	8004f0c <newGPIO>
+ 8004e0a:	f000 f877 	bl	8004efc <newGPIO>
  8004e0e:	4b0b      	ldr	r3, [pc, #44]	; (8004e3c <setup+0x60>)
  8004e10:	6018      	str	r0, [r3, #0]
  8004e12:	bd08      	pop	{r3, pc}
@@ -11397,28 +11397,28 @@ void testTwoNucleoBoardComm(void) {
  8004e46:	2101      	movs	r1, #1
  8004e48:	4b21      	ldr	r3, [pc, #132]	; (8004ed0 <testTwoNucleoBoardComm+0x90>)
  8004e4a:	6818      	ldr	r0, [r3, #0]
- 8004e4c:	f000 f879 	bl	8004f42 <gpioWrite>
+ 8004e4c:	f000 f871 	bl	8004f32 <gpioWrite>
 	while(gpioRead(button));
  8004e50:	4b20      	ldr	r3, [pc, #128]	; (8004ed4 <testTwoNucleoBoardComm+0x94>)
  8004e52:	6818      	ldr	r0, [r3, #0]
- 8004e54:	f000 f85d 	bl	8004f12 <gpioRead>
+ 8004e54:	f000 f855 	bl	8004f02 <gpioRead>
  8004e58:	2800      	cmp	r0, #0
  8004e5a:	d1f9      	bne.n	8004e50 <testTwoNucleoBoardComm+0x10>
 	gpioWrite(led, Low);
  8004e5c:	4c1c      	ldr	r4, [pc, #112]	; (8004ed0 <testTwoNucleoBoardComm+0x90>)
  8004e5e:	2100      	movs	r1, #0
  8004e60:	6820      	ldr	r0, [r4, #0]
- 8004e62:	f000 f86e 	bl	8004f42 <gpioWrite>
+ 8004e62:	f000 f866 	bl	8004f32 <gpioWrite>
 	strcpy(i2cBus->TxBuffer, "Message B from the Master");
-	i2cSend_IT(i2cBus, MasterMode(Target_Address));
+	i2cWrite_IT(i2cBus, MasterMode(Target_Address));
 	while(i2cBus->TxStatus != Completed);
 */
 	  //Non-Blocking DMA mode
 	gpioWrite(led, Low);
  8004e66:	2100      	movs	r1, #0
  8004e68:	6820      	ldr	r0, [r4, #0]
- 8004e6a:	f000 f86a 	bl	8004f42 <gpioWrite>
-	//Test continous sending
+ 8004e6a:	f000 f862 	bl	8004f32 <gpioWrite>
+	//Test continous Writeing
 	for(int i = 0; i < 3; i++) {
  8004e6e:	2700      	movs	r7, #0
  8004e70:	e01c      	b.n	8004eac <testTwoNucleoBoardComm+0x6c>
@@ -11436,10 +11436,10 @@ void testTwoNucleoBoardComm(void) {
  8004e86:	61b1      	str	r1, [r6, #24]
  8004e88:	8823      	ldrh	r3, [r4, #0]
  8004e8a:	83b3      	strh	r3, [r6, #28]
-		i2cSend_DMA(i2cBus, MasterMode(Target_Address));
+		i2cWrite_DMA(i2cBus, MasterMode(Target_Address));
  8004e8c:	210c      	movs	r1, #12
  8004e8e:	4630      	mov	r0, r6
- 8004e90:	f000 f89e 	bl	8004fd0 <i2cSend_DMA>
+ 8004e90:	f000 f896 	bl	8004fc0 <i2cWrite_DMA>
 		while(i2cBus->TxStatus != Completed);
  8004e94:	4b10      	ldr	r3, [pc, #64]	; (8004ed8 <testTwoNucleoBoardComm+0x98>)
  8004e96:	681b      	ldr	r3, [r3, #0]
@@ -11463,7 +11463,7 @@ void testTwoNucleoBoardComm(void) {
  8004eb4:	f44f 7196 	mov.w	r1, #300	; 0x12c
  8004eb8:	4b05      	ldr	r3, [pc, #20]	; (8004ed0 <testTwoNucleoBoardComm+0x90>)
  8004eba:	6818      	ldr	r0, [r3, #0]
- 8004ebc:	f000 f84a 	bl	8004f54 <blink>
+ 8004ebc:	f000 f842 	bl	8004f44 <blink>
  8004ec0:	3401      	adds	r4, #1
  8004ec2:	2c04      	cmp	r4, #4
  8004ec4:	ddf6      	ble.n	8004eb4 <testTwoNucleoBoardComm+0x74>
@@ -11502,385 +11502,385 @@ void Exception_Handler(const char* str) {
  8004ef6:	bd08      	pop	{r3, pc}
  8004ef8:	080081a8 	.word	0x080081a8
 
-08004efc <THL_main>:
-#include "THL_main.h"
-#include "THL_I2cTester.h"
-void THL_main(void) {
- 8004efc:	b508      	push	{r3, lr}
-	//testUsart();
-	testI2c();
- 8004efe:	f7ff fff1 	bl	8004ee4 <testI2c>
-	delay(1000);
- 8004f02:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
- 8004f06:	f000 f917 	bl	8005138 <delay>
- 8004f0a:	bd08      	pop	{r3, pc}
-
-08004f0c <newGPIO>:
+08004efc <newGPIO>:
 
 
 
 /*========================SETUP AND DATA STRUCTURE========================*/
 GPIO *newGPIO(GPIO* obj, GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
 	obj->GPIO_Pin = GPIO_Pin;
- 8004f0c:	8082      	strh	r2, [r0, #4]
+ 8004efc:	8082      	strh	r2, [r0, #4]
 	obj->GPIOx = GPIOx;
- 8004f0e:	6001      	str	r1, [r0, #0]
+ 8004efe:	6001      	str	r1, [r0, #0]
 	return obj;
 }
- 8004f10:	4770      	bx	lr
+ 8004f00:	4770      	bx	lr
 
-08004f12 <gpioRead>:
+08004f02 <gpioRead>:
 /*========================General GPIO Methods================================*/
 void gpioWrite(GPIO* obj, uint8_t Bit) {
 	if(Bit == High) turnOn(obj);
 	else turnOff(obj);
 }
 uint8_t gpioRead(GPIO* obj) {
- 8004f12:	b508      	push	{r3, lr}
+ 8004f02:	b508      	push	{r3, lr}
 	return HAL_GPIO_ReadPin(obj->GPIOx, obj->GPIO_Pin) == GPIO_PIN_SET?High:Low;
- 8004f14:	8881      	ldrh	r1, [r0, #4]
- 8004f16:	6800      	ldr	r0, [r0, #0]
- 8004f18:	f7fc fd32 	bl	8001980 <HAL_GPIO_ReadPin>
+ 8004f04:	8881      	ldrh	r1, [r0, #4]
+ 8004f06:	6800      	ldr	r0, [r0, #0]
+ 8004f08:	f7fc fd3a 	bl	8001980 <HAL_GPIO_ReadPin>
 }
- 8004f1c:	2801      	cmp	r0, #1
- 8004f1e:	bf14      	ite	ne
- 8004f20:	2000      	movne	r0, #0
- 8004f22:	2001      	moveq	r0, #1
- 8004f24:	bd08      	pop	{r3, pc}
+ 8004f0c:	2801      	cmp	r0, #1
+ 8004f0e:	bf14      	ite	ne
+ 8004f10:	2000      	movne	r0, #0
+ 8004f12:	2001      	moveq	r0, #1
+ 8004f14:	bd08      	pop	{r3, pc}
 
-08004f26 <turnOn>:
+08004f16 <turnOn>:
 /*=============================================================================*/
 
 
 /*========================Convenience Purposed Methods========================*/
 void turnOn(GPIO* obj) {
- 8004f26:	b508      	push	{r3, lr}
+ 8004f16:	b508      	push	{r3, lr}
 	HAL_GPIO_WritePin(obj->GPIOx, obj->GPIO_Pin, GPIO_PIN_SET);
- 8004f28:	2201      	movs	r2, #1
- 8004f2a:	8881      	ldrh	r1, [r0, #4]
- 8004f2c:	6800      	ldr	r0, [r0, #0]
- 8004f2e:	f7fc fd2e 	bl	800198e <HAL_GPIO_WritePin>
- 8004f32:	bd08      	pop	{r3, pc}
+ 8004f18:	2201      	movs	r2, #1
+ 8004f1a:	8881      	ldrh	r1, [r0, #4]
+ 8004f1c:	6800      	ldr	r0, [r0, #0]
+ 8004f1e:	f7fc fd36 	bl	800198e <HAL_GPIO_WritePin>
+ 8004f22:	bd08      	pop	{r3, pc}
 
-08004f34 <turnOff>:
+08004f24 <turnOff>:
 }
 
 void turnOff(GPIO* obj) {
- 8004f34:	b508      	push	{r3, lr}
+ 8004f24:	b508      	push	{r3, lr}
 	HAL_GPIO_WritePin(obj->GPIOx, obj->GPIO_Pin, GPIO_PIN_RESET);
- 8004f36:	2200      	movs	r2, #0
- 8004f38:	8881      	ldrh	r1, [r0, #4]
- 8004f3a:	6800      	ldr	r0, [r0, #0]
- 8004f3c:	f7fc fd27 	bl	800198e <HAL_GPIO_WritePin>
- 8004f40:	bd08      	pop	{r3, pc}
+ 8004f26:	2200      	movs	r2, #0
+ 8004f28:	8881      	ldrh	r1, [r0, #4]
+ 8004f2a:	6800      	ldr	r0, [r0, #0]
+ 8004f2c:	f7fc fd2f 	bl	800198e <HAL_GPIO_WritePin>
+ 8004f30:	bd08      	pop	{r3, pc}
 
-08004f42 <gpioWrite>:
+08004f32 <gpioWrite>:
 void gpioWrite(GPIO* obj, uint8_t Bit) {
- 8004f42:	b508      	push	{r3, lr}
+ 8004f32:	b508      	push	{r3, lr}
 	if(Bit == High) turnOn(obj);
- 8004f44:	2901      	cmp	r1, #1
- 8004f46:	d002      	beq.n	8004f4e <gpioWrite+0xc>
+ 8004f34:	2901      	cmp	r1, #1
+ 8004f36:	d002      	beq.n	8004f3e <gpioWrite+0xc>
 	else turnOff(obj);
- 8004f48:	f7ff fff4 	bl	8004f34 <turnOff>
- 8004f4c:	bd08      	pop	{r3, pc}
+ 8004f38:	f7ff fff4 	bl	8004f24 <turnOff>
+ 8004f3c:	bd08      	pop	{r3, pc}
 	if(Bit == High) turnOn(obj);
- 8004f4e:	f7ff ffea 	bl	8004f26 <turnOn>
- 8004f52:	bd08      	pop	{r3, pc}
+ 8004f3e:	f7ff ffea 	bl	8004f16 <turnOn>
+ 8004f42:	bd08      	pop	{r3, pc}
 
-08004f54 <blink>:
+08004f44 <blink>:
 }
 void blink(GPIO* obj, uint32_t blkPeriod) {
- 8004f54:	b538      	push	{r3, r4, r5, lr}
- 8004f56:	4605      	mov	r5, r0
- 8004f58:	460c      	mov	r4, r1
+ 8004f44:	b538      	push	{r3, r4, r5, lr}
+ 8004f46:	4605      	mov	r5, r0
+ 8004f48:	460c      	mov	r4, r1
 	turnOn(obj);
- 8004f5a:	f7ff ffe4 	bl	8004f26 <turnOn>
+ 8004f4a:	f7ff ffe4 	bl	8004f16 <turnOn>
 	delay(blkPeriod / 2);
- 8004f5e:	0864      	lsrs	r4, r4, #1
- 8004f60:	4620      	mov	r0, r4
- 8004f62:	f000 f8e9 	bl	8005138 <delay>
+ 8004f4e:	0864      	lsrs	r4, r4, #1
+ 8004f50:	4620      	mov	r0, r4
+ 8004f52:	f000 f8f1 	bl	8005138 <delay>
 	turnOff(obj);
- 8004f66:	4628      	mov	r0, r5
- 8004f68:	f7ff ffe4 	bl	8004f34 <turnOff>
+ 8004f56:	4628      	mov	r0, r5
+ 8004f58:	f7ff ffe4 	bl	8004f24 <turnOff>
 	delay(blkPeriod / 2);
- 8004f6c:	4620      	mov	r0, r4
- 8004f6e:	f000 f8e3 	bl	8005138 <delay>
- 8004f72:	bd38      	pop	{r3, r4, r5, pc}
+ 8004f5c:	4620      	mov	r0, r4
+ 8004f5e:	f000 f8eb 	bl	8005138 <delay>
+ 8004f62:	bd38      	pop	{r3, r4, r5, pc}
 
-08004f74 <newI2C>:
+08004f64 <newI2C>:
 I2C* ActiveI2Cs[Max_Num_I2Cs];
 
 /*==============================instantiation===============================*/
 /* Pseudo-Constructor
  * */
 I2C *newI2C(I2C* instance, I2C_HandleTypeDef *hi2c) {
- 8004f74:	b410      	push	{r4}
+ 8004f64:	b410      	push	{r4}
 	instance->hi2c = hi2c;
- 8004f76:	6001      	str	r1, [r0, #0]
+ 8004f66:	6001      	str	r1, [r0, #0]
 	instance->TxTimeOut = I2C_Default_TxTimeOut;
- 8004f78:	f242 7310 	movw	r3, #10000	; 0x2710
- 8004f7c:	f8c0 30d0 	str.w	r3, [r0, #208]	; 0xd0
+ 8004f68:	f242 7310 	movw	r3, #10000	; 0x2710
+ 8004f6c:	f8c0 30d0 	str.w	r3, [r0, #208]	; 0xd0
 	instance->RxTimeOut = I2C_Default_RxTimeOut;
- 8004f80:	f8c0 30d4 	str.w	r3, [r0, #212]	; 0xd4
+ 8004f70:	f8c0 30d4 	str.w	r3, [r0, #212]	; 0xd4
 	instance->TxStatus = Ready;
- 8004f84:	2301      	movs	r3, #1
- 8004f86:	f880 30d8 	strb.w	r3, [r0, #216]	; 0xd8
+ 8004f74:	2301      	movs	r3, #1
+ 8004f76:	f880 30d8 	strb.w	r3, [r0, #216]	; 0xd8
 	instance->RxStatus = Ready;
- 8004f8a:	f880 30d9 	strb.w	r3, [r0, #217]	; 0xd9
+ 8004f7a:	f880 30d9 	strb.w	r3, [r0, #217]	; 0xd9
 	instance->AddressSize8Bit = True;
- 8004f8e:	f880 30da 	strb.w	r3, [r0, #218]	; 0xda
+ 8004f7e:	f880 30da 	strb.w	r3, [r0, #218]	; 0xda
 	for(int i = 0; i < numActiveI2Cs; i++)
- 8004f92:	2300      	movs	r3, #0
- 8004f94:	4a0c      	ldr	r2, [pc, #48]	; (8004fc8 <newI2C+0x54>)
- 8004f96:	8812      	ldrh	r2, [r2, #0]
- 8004f98:	4614      	mov	r4, r2
- 8004f9a:	4293      	cmp	r3, r2
- 8004f9c:	da0b      	bge.n	8004fb6 <newI2C+0x42>
+ 8004f82:	2300      	movs	r3, #0
+ 8004f84:	4a0c      	ldr	r2, [pc, #48]	; (8004fb8 <newI2C+0x54>)
+ 8004f86:	8812      	ldrh	r2, [r2, #0]
+ 8004f88:	4614      	mov	r4, r2
+ 8004f8a:	4293      	cmp	r3, r2
+ 8004f8c:	da0b      	bge.n	8004fa6 <newI2C+0x42>
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
- 8004f9e:	4a0b      	ldr	r2, [pc, #44]	; (8004fcc <newI2C+0x58>)
- 8004fa0:	f852 2023 	ldr.w	r2, [r2, r3, lsl #2]
- 8004fa4:	6812      	ldr	r2, [r2, #0]
- 8004fa6:	4291      	cmp	r1, r2
- 8004fa8:	d001      	beq.n	8004fae <newI2C+0x3a>
+ 8004f8e:	4a0b      	ldr	r2, [pc, #44]	; (8004fbc <newI2C+0x58>)
+ 8004f90:	f852 2023 	ldr.w	r2, [r2, r3, lsl #2]
+ 8004f94:	6812      	ldr	r2, [r2, #0]
+ 8004f96:	4291      	cmp	r1, r2
+ 8004f98:	d001      	beq.n	8004f9e <newI2C+0x3a>
 	for(int i = 0; i < numActiveI2Cs; i++)
- 8004faa:	3301      	adds	r3, #1
- 8004fac:	e7f2      	b.n	8004f94 <newI2C+0x20>
+ 8004f9a:	3301      	adds	r3, #1
+ 8004f9c:	e7f2      	b.n	8004f84 <newI2C+0x20>
 			ActiveI2Cs[i] = instance;
- 8004fae:	4a07      	ldr	r2, [pc, #28]	; (8004fcc <newI2C+0x58>)
- 8004fb0:	f842 0023 	str.w	r0, [r2, r3, lsl #2]
+ 8004f9e:	4a07      	ldr	r2, [pc, #28]	; (8004fbc <newI2C+0x58>)
+ 8004fa0:	f842 0023 	str.w	r0, [r2, r3, lsl #2]
 			return instance;
- 8004fb4:	e005      	b.n	8004fc2 <newI2C+0x4e>
+ 8004fa4:	e005      	b.n	8004fb2 <newI2C+0x4e>
 		}
 	ActiveI2Cs[numActiveI2Cs++] = instance;
- 8004fb6:	3201      	adds	r2, #1
- 8004fb8:	4b03      	ldr	r3, [pc, #12]	; (8004fc8 <newI2C+0x54>)
- 8004fba:	801a      	strh	r2, [r3, #0]
- 8004fbc:	4b03      	ldr	r3, [pc, #12]	; (8004fcc <newI2C+0x58>)
- 8004fbe:	f843 0024 	str.w	r0, [r3, r4, lsl #2]
+ 8004fa6:	3201      	adds	r2, #1
+ 8004fa8:	4b03      	ldr	r3, [pc, #12]	; (8004fb8 <newI2C+0x54>)
+ 8004faa:	801a      	strh	r2, [r3, #0]
+ 8004fac:	4b03      	ldr	r3, [pc, #12]	; (8004fbc <newI2C+0x58>)
+ 8004fae:	f843 0024 	str.w	r0, [r3, r4, lsl #2]
 	return instance;
 }
- 8004fc2:	f85d 4b04 	ldr.w	r4, [sp], #4
- 8004fc6:	4770      	bx	lr
- 8004fc8:	20000698 	.word	0x20000698
- 8004fcc:	20000d60 	.word	0x20000d60
+ 8004fb2:	f85d 4b04 	ldr.w	r4, [sp], #4
+ 8004fb6:	4770      	bx	lr
+ 8004fb8:	20000698 	.word	0x20000698
+ 8004fbc:	20000d60 	.word	0x20000d60
 
-08004fd0 <i2cSend_DMA>:
+08004fc0 <i2cWrite_DMA>:
 
 
 
 
 /*==============================DMA Mode===============================*/
-void i2cSend_DMA(I2C* instance, uint16_t Mode) {
- 8004fd0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+void i2cWrite_DMA(I2C* instance, uint16_t Mode) {
+ 8004fc0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
 	//check if the previous transmission is completed
 	if(instance->TxStatus == InProcess) return;
- 8004fd2:	f890 30d8 	ldrb.w	r3, [r0, #216]	; 0xd8
- 8004fd6:	b2db      	uxtb	r3, r3
- 8004fd8:	2b02      	cmp	r3, #2
- 8004fda:	d016      	beq.n	800500a <i2cSend_DMA+0x3a>
- 8004fdc:	460c      	mov	r4, r1
- 8004fde:	4606      	mov	r6, r0
+ 8004fc2:	f890 30d8 	ldrb.w	r3, [r0, #216]	; 0xd8
+ 8004fc6:	b2db      	uxtb	r3, r3
+ 8004fc8:	2b02      	cmp	r3, #2
+ 8004fca:	d016      	beq.n	8004ffa <i2cWrite_DMA+0x3a>
+ 8004fcc:	460c      	mov	r4, r1
+ 8004fce:	4606      	mov	r6, r0
 	HAL_StatusTypeDef Status;
 	if(Mode != SlaveMode)
- 8004fe0:	f64f 73ff 	movw	r3, #65535	; 0xffff
- 8004fe4:	4299      	cmp	r1, r3
- 8004fe6:	d011      	beq.n	800500c <i2cSend_DMA+0x3c>
+ 8004fd0:	f64f 73ff 	movw	r3, #65535	; 0xffff
+ 8004fd4:	4299      	cmp	r1, r3
+ 8004fd6:	d011      	beq.n	8004ffc <i2cWrite_DMA+0x3c>
 		//The Mode variable here in MasterMode includes devAddress
 		Status = HAL_I2C_Master_Transmit_DMA(instance->hi2c, Mode /*Actually devAddress*/,
- 8004fe8:	4605      	mov	r5, r0
- 8004fea:	f855 7b04 	ldr.w	r7, [r5], #4
+ 8004fd8:	4605      	mov	r5, r0
+ 8004fda:	f855 7b04 	ldr.w	r7, [r5], #4
 			                       (uint8_t*)instance->TxBuffer, strlen(instance->TxBuffer));
- 8004fee:	4628      	mov	r0, r5
- 8004ff0:	f7fb f90e 	bl	8000210 <strlen>
+ 8004fde:	4628      	mov	r0, r5
+ 8004fe0:	f7fb f916 	bl	8000210 <strlen>
 		Status = HAL_I2C_Master_Transmit_DMA(instance->hi2c, Mode /*Actually devAddress*/,
- 8004ff4:	b283      	uxth	r3, r0
- 8004ff6:	462a      	mov	r2, r5
- 8004ff8:	4621      	mov	r1, r4
- 8004ffa:	4638      	mov	r0, r7
- 8004ffc:	f7fc feac 	bl	8001d58 <HAL_I2C_Master_Transmit_DMA>
+ 8004fe4:	b283      	uxth	r3, r0
+ 8004fe6:	462a      	mov	r2, r5
+ 8004fe8:	4621      	mov	r1, r4
+ 8004fea:	4638      	mov	r0, r7
+ 8004fec:	f7fc feb4 	bl	8001d58 <HAL_I2C_Master_Transmit_DMA>
 	else
 		Status =  HAL_I2C_Slave_Transmit_DMA(instance->hi2c, (uint8_t*)instance->TxBuffer,
 										 strlen(instance->TxBuffer));
 
 	if(Status == HAL_ERROR) {
- 8005000:	2801      	cmp	r0, #1
- 8005002:	d00f      	beq.n	8005024 <i2cSend_DMA+0x54>
+ 8004ff0:	2801      	cmp	r0, #1
+ 8004ff2:	d00f      	beq.n	8005014 <i2cWrite_DMA+0x54>
 		instance->TxStatus = Error;
-		throwException("THL_I2C.c: i2cSend_DMA() | Error");
+		throwException("THL_I2C.c: i2cWrite_DMA() | Error");
 		return;
 	}
 	instance->TxStatus = InProcess;
- 8005004:	2302      	movs	r3, #2
- 8005006:	f886 30d8 	strb.w	r3, [r6, #216]	; 0xd8
- 800500a:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+ 8004ff4:	2302      	movs	r3, #2
+ 8004ff6:	f886 30d8 	strb.w	r3, [r6, #216]	; 0xd8
+ 8004ffa:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
 		Status =  HAL_I2C_Slave_Transmit_DMA(instance->hi2c, (uint8_t*)instance->TxBuffer,
- 800500c:	4604      	mov	r4, r0
- 800500e:	f854 5b04 	ldr.w	r5, [r4], #4
+ 8004ffc:	4604      	mov	r4, r0
+ 8004ffe:	f854 5b04 	ldr.w	r5, [r4], #4
 										 strlen(instance->TxBuffer));
- 8005012:	4620      	mov	r0, r4
- 8005014:	f7fb f8fc 	bl	8000210 <strlen>
+ 8005002:	4620      	mov	r0, r4
+ 8005004:	f7fb f904 	bl	8000210 <strlen>
 		Status =  HAL_I2C_Slave_Transmit_DMA(instance->hi2c, (uint8_t*)instance->TxBuffer,
- 8005018:	b282      	uxth	r2, r0
- 800501a:	4621      	mov	r1, r4
- 800501c:	4628      	mov	r0, r5
- 800501e:	f7fc ff39 	bl	8001e94 <HAL_I2C_Slave_Transmit_DMA>
- 8005022:	e7ed      	b.n	8005000 <i2cSend_DMA+0x30>
+ 8005008:	b282      	uxth	r2, r0
+ 800500a:	4621      	mov	r1, r4
+ 800500c:	4628      	mov	r0, r5
+ 800500e:	f7fc ff41 	bl	8001e94 <HAL_I2C_Slave_Transmit_DMA>
+ 8005012:	e7ed      	b.n	8004ff0 <i2cWrite_DMA+0x30>
 		instance->TxStatus = Error;
- 8005024:	2305      	movs	r3, #5
- 8005026:	f886 30d8 	strb.w	r3, [r6, #216]	; 0xd8
-		throwException("THL_I2C.c: i2cSend_DMA() | Error");
- 800502a:	4802      	ldr	r0, [pc, #8]	; (8005034 <i2cSend_DMA+0x64>)
- 800502c:	f000 f958 	bl	80052e0 <throwException>
+ 8005014:	2305      	movs	r3, #5
+ 8005016:	f886 30d8 	strb.w	r3, [r6, #216]	; 0xd8
+		throwException("THL_I2C.c: i2cWrite_DMA() | Error");
+ 800501a:	4802      	ldr	r0, [pc, #8]	; (8005024 <i2cWrite_DMA+0x64>)
+ 800501c:	f000 f960 	bl	80052e0 <throwException>
 		return;
- 8005030:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
- 8005032:	bf00      	nop
- 8005034:	080081f0 	.word	0x080081f0
+ 8005020:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+ 8005022:	bf00      	nop
+ 8005024:	080081f0 	.word	0x080081f0
 
-08005038 <IT_CallBack_I2cTC>:
+08005028 <IT_CallBack_I2cTC>:
 }
 /*=========================================================================*/
 
 
 /*==============================Interrupt Handler===============================*/
 __weak void IT_CallBack_I2cTC(I2C* instance){
- 8005038:	4770      	bx	lr
+ 8005028:	4770      	bx	lr
 	...
 
-0800503c <HAL_I2C_MasterTxCpltCallback>:
+0800502c <HAL_I2C_MasterTxCpltCallback>:
 void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
- 800503c:	b538      	push	{r3, r4, r5, lr}
- 800503e:	4605      	mov	r5, r0
+ 800502c:	b538      	push	{r3, r4, r5, lr}
+ 800502e:	4605      	mov	r5, r0
 	for(int i = 0; i < numActiveI2Cs; i++) {
- 8005040:	2400      	movs	r4, #0
- 8005042:	e000      	b.n	8005046 <HAL_I2C_MasterTxCpltCallback+0xa>
- 8005044:	3401      	adds	r4, #1
- 8005046:	4b0a      	ldr	r3, [pc, #40]	; (8005070 <HAL_I2C_MasterTxCpltCallback+0x34>)
- 8005048:	881b      	ldrh	r3, [r3, #0]
- 800504a:	429c      	cmp	r4, r3
- 800504c:	da0e      	bge.n	800506c <HAL_I2C_MasterTxCpltCallback+0x30>
+ 8005030:	2400      	movs	r4, #0
+ 8005032:	e000      	b.n	8005036 <HAL_I2C_MasterTxCpltCallback+0xa>
+ 8005034:	3401      	adds	r4, #1
+ 8005036:	4b0a      	ldr	r3, [pc, #40]	; (8005060 <HAL_I2C_MasterTxCpltCallback+0x34>)
+ 8005038:	881b      	ldrh	r3, [r3, #0]
+ 800503a:	429c      	cmp	r4, r3
+ 800503c:	da0e      	bge.n	800505c <HAL_I2C_MasterTxCpltCallback+0x30>
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
- 800504e:	4b09      	ldr	r3, [pc, #36]	; (8005074 <HAL_I2C_MasterTxCpltCallback+0x38>)
- 8005050:	f853 0024 	ldr.w	r0, [r3, r4, lsl #2]
- 8005054:	6803      	ldr	r3, [r0, #0]
- 8005056:	42ab      	cmp	r3, r5
- 8005058:	d1f4      	bne.n	8005044 <HAL_I2C_MasterTxCpltCallback+0x8>
+ 800503e:	4b09      	ldr	r3, [pc, #36]	; (8005064 <HAL_I2C_MasterTxCpltCallback+0x38>)
+ 8005040:	f853 0024 	ldr.w	r0, [r3, r4, lsl #2]
+ 8005044:	6803      	ldr	r3, [r0, #0]
+ 8005046:	42ab      	cmp	r3, r5
+ 8005048:	d1f4      	bne.n	8005034 <HAL_I2C_MasterTxCpltCallback+0x8>
 			IT_CallBack_I2cTC(ActiveI2Cs[i]);
- 800505a:	f7ff ffed 	bl	8005038 <IT_CallBack_I2cTC>
+ 800504a:	f7ff ffed 	bl	8005028 <IT_CallBack_I2cTC>
 			ActiveI2Cs[i]->TxStatus = Completed;
- 800505e:	4b05      	ldr	r3, [pc, #20]	; (8005074 <HAL_I2C_MasterTxCpltCallback+0x38>)
- 8005060:	f853 3024 	ldr.w	r3, [r3, r4, lsl #2]
- 8005064:	2203      	movs	r2, #3
- 8005066:	f883 20d8 	strb.w	r2, [r3, #216]	; 0xd8
- 800506a:	e7eb      	b.n	8005044 <HAL_I2C_MasterTxCpltCallback+0x8>
+ 800504e:	4b05      	ldr	r3, [pc, #20]	; (8005064 <HAL_I2C_MasterTxCpltCallback+0x38>)
+ 8005050:	f853 3024 	ldr.w	r3, [r3, r4, lsl #2]
+ 8005054:	2203      	movs	r2, #3
+ 8005056:	f883 20d8 	strb.w	r2, [r3, #216]	; 0xd8
+ 800505a:	e7eb      	b.n	8005034 <HAL_I2C_MasterTxCpltCallback+0x8>
 }
- 800506c:	bd38      	pop	{r3, r4, r5, pc}
- 800506e:	bf00      	nop
- 8005070:	20000698 	.word	0x20000698
- 8005074:	20000d60 	.word	0x20000d60
+ 800505c:	bd38      	pop	{r3, r4, r5, pc}
+ 800505e:	bf00      	nop
+ 8005060:	20000698 	.word	0x20000698
+ 8005064:	20000d60 	.word	0x20000d60
 
-08005078 <HAL_I2C_SlaveTxCpltCallback>:
+08005068 <HAL_I2C_SlaveTxCpltCallback>:
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
- 8005078:	b538      	push	{r3, r4, r5, lr}
- 800507a:	4605      	mov	r5, r0
+ 8005068:	b538      	push	{r3, r4, r5, lr}
+ 800506a:	4605      	mov	r5, r0
 	for(int i = 0; i < numActiveI2Cs; i++) {
- 800507c:	2400      	movs	r4, #0
- 800507e:	e000      	b.n	8005082 <HAL_I2C_SlaveTxCpltCallback+0xa>
- 8005080:	3401      	adds	r4, #1
- 8005082:	4b0a      	ldr	r3, [pc, #40]	; (80050ac <HAL_I2C_SlaveTxCpltCallback+0x34>)
- 8005084:	881b      	ldrh	r3, [r3, #0]
- 8005086:	429c      	cmp	r4, r3
- 8005088:	da0e      	bge.n	80050a8 <HAL_I2C_SlaveTxCpltCallback+0x30>
+ 800506c:	2400      	movs	r4, #0
+ 800506e:	e000      	b.n	8005072 <HAL_I2C_SlaveTxCpltCallback+0xa>
+ 8005070:	3401      	adds	r4, #1
+ 8005072:	4b0a      	ldr	r3, [pc, #40]	; (800509c <HAL_I2C_SlaveTxCpltCallback+0x34>)
+ 8005074:	881b      	ldrh	r3, [r3, #0]
+ 8005076:	429c      	cmp	r4, r3
+ 8005078:	da0e      	bge.n	8005098 <HAL_I2C_SlaveTxCpltCallback+0x30>
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
- 800508a:	4b09      	ldr	r3, [pc, #36]	; (80050b0 <HAL_I2C_SlaveTxCpltCallback+0x38>)
- 800508c:	f853 0024 	ldr.w	r0, [r3, r4, lsl #2]
- 8005090:	6803      	ldr	r3, [r0, #0]
- 8005092:	42ab      	cmp	r3, r5
- 8005094:	d1f4      	bne.n	8005080 <HAL_I2C_SlaveTxCpltCallback+0x8>
+ 800507a:	4b09      	ldr	r3, [pc, #36]	; (80050a0 <HAL_I2C_SlaveTxCpltCallback+0x38>)
+ 800507c:	f853 0024 	ldr.w	r0, [r3, r4, lsl #2]
+ 8005080:	6803      	ldr	r3, [r0, #0]
+ 8005082:	42ab      	cmp	r3, r5
+ 8005084:	d1f4      	bne.n	8005070 <HAL_I2C_SlaveTxCpltCallback+0x8>
 			IT_CallBack_I2cTC(ActiveI2Cs[i]);
- 8005096:	f7ff ffcf 	bl	8005038 <IT_CallBack_I2cTC>
+ 8005086:	f7ff ffcf 	bl	8005028 <IT_CallBack_I2cTC>
 			ActiveI2Cs[i]->TxStatus = Completed;
- 800509a:	4b05      	ldr	r3, [pc, #20]	; (80050b0 <HAL_I2C_SlaveTxCpltCallback+0x38>)
- 800509c:	f853 3024 	ldr.w	r3, [r3, r4, lsl #2]
- 80050a0:	2203      	movs	r2, #3
- 80050a2:	f883 20d8 	strb.w	r2, [r3, #216]	; 0xd8
- 80050a6:	e7eb      	b.n	8005080 <HAL_I2C_SlaveTxCpltCallback+0x8>
+ 800508a:	4b05      	ldr	r3, [pc, #20]	; (80050a0 <HAL_I2C_SlaveTxCpltCallback+0x38>)
+ 800508c:	f853 3024 	ldr.w	r3, [r3, r4, lsl #2]
+ 8005090:	2203      	movs	r2, #3
+ 8005092:	f883 20d8 	strb.w	r2, [r3, #216]	; 0xd8
+ 8005096:	e7eb      	b.n	8005070 <HAL_I2C_SlaveTxCpltCallback+0x8>
 }
- 80050a8:	bd38      	pop	{r3, r4, r5, pc}
- 80050aa:	bf00      	nop
- 80050ac:	20000698 	.word	0x20000698
- 80050b0:	20000d60 	.word	0x20000d60
+ 8005098:	bd38      	pop	{r3, r4, r5, pc}
+ 800509a:	bf00      	nop
+ 800509c:	20000698 	.word	0x20000698
+ 80050a0:	20000d60 	.word	0x20000d60
 
-080050b4 <IT_CallBack_I2cRC>:
+080050a4 <IT_CallBack_I2cRC>:
 	 UNUSED(instance);
 }
 
 __weak void IT_CallBack_I2cRC(I2C* instance){
- 80050b4:	4770      	bx	lr
+ 80050a4:	4770      	bx	lr
 	...
 
-080050b8 <HAL_I2C_MasterRxCpltCallback>:
+080050a8 <HAL_I2C_MasterRxCpltCallback>:
 void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
- 80050b8:	b538      	push	{r3, r4, r5, lr}
- 80050ba:	4605      	mov	r5, r0
+ 80050a8:	b538      	push	{r3, r4, r5, lr}
+ 80050aa:	4605      	mov	r5, r0
 	for(int i = 0; i < numActiveI2Cs; i++) {
- 80050bc:	2400      	movs	r4, #0
- 80050be:	e000      	b.n	80050c2 <HAL_I2C_MasterRxCpltCallback+0xa>
- 80050c0:	3401      	adds	r4, #1
- 80050c2:	4b0a      	ldr	r3, [pc, #40]	; (80050ec <HAL_I2C_MasterRxCpltCallback+0x34>)
- 80050c4:	881b      	ldrh	r3, [r3, #0]
- 80050c6:	429c      	cmp	r4, r3
- 80050c8:	da0e      	bge.n	80050e8 <HAL_I2C_MasterRxCpltCallback+0x30>
+ 80050ac:	2400      	movs	r4, #0
+ 80050ae:	e000      	b.n	80050b2 <HAL_I2C_MasterRxCpltCallback+0xa>
+ 80050b0:	3401      	adds	r4, #1
+ 80050b2:	4b0a      	ldr	r3, [pc, #40]	; (80050dc <HAL_I2C_MasterRxCpltCallback+0x34>)
+ 80050b4:	881b      	ldrh	r3, [r3, #0]
+ 80050b6:	429c      	cmp	r4, r3
+ 80050b8:	da0e      	bge.n	80050d8 <HAL_I2C_MasterRxCpltCallback+0x30>
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
- 80050ca:	4b09      	ldr	r3, [pc, #36]	; (80050f0 <HAL_I2C_MasterRxCpltCallback+0x38>)
- 80050cc:	f853 0024 	ldr.w	r0, [r3, r4, lsl #2]
- 80050d0:	6803      	ldr	r3, [r0, #0]
- 80050d2:	42ab      	cmp	r3, r5
- 80050d4:	d1f4      	bne.n	80050c0 <HAL_I2C_MasterRxCpltCallback+0x8>
+ 80050ba:	4b09      	ldr	r3, [pc, #36]	; (80050e0 <HAL_I2C_MasterRxCpltCallback+0x38>)
+ 80050bc:	f853 0024 	ldr.w	r0, [r3, r4, lsl #2]
+ 80050c0:	6803      	ldr	r3, [r0, #0]
+ 80050c2:	42ab      	cmp	r3, r5
+ 80050c4:	d1f4      	bne.n	80050b0 <HAL_I2C_MasterRxCpltCallback+0x8>
 			IT_CallBack_I2cRC(ActiveI2Cs[i]);
- 80050d6:	f7ff ffed 	bl	80050b4 <IT_CallBack_I2cRC>
+ 80050c6:	f7ff ffed 	bl	80050a4 <IT_CallBack_I2cRC>
 			ActiveI2Cs[i]->RxStatus = Completed;
- 80050da:	4b05      	ldr	r3, [pc, #20]	; (80050f0 <HAL_I2C_MasterRxCpltCallback+0x38>)
- 80050dc:	f853 3024 	ldr.w	r3, [r3, r4, lsl #2]
- 80050e0:	2203      	movs	r2, #3
- 80050e2:	f883 20d9 	strb.w	r2, [r3, #217]	; 0xd9
- 80050e6:	e7eb      	b.n	80050c0 <HAL_I2C_MasterRxCpltCallback+0x8>
+ 80050ca:	4b05      	ldr	r3, [pc, #20]	; (80050e0 <HAL_I2C_MasterRxCpltCallback+0x38>)
+ 80050cc:	f853 3024 	ldr.w	r3, [r3, r4, lsl #2]
+ 80050d0:	2203      	movs	r2, #3
+ 80050d2:	f883 20d9 	strb.w	r2, [r3, #217]	; 0xd9
+ 80050d6:	e7eb      	b.n	80050b0 <HAL_I2C_MasterRxCpltCallback+0x8>
 }
- 80050e8:	bd38      	pop	{r3, r4, r5, pc}
- 80050ea:	bf00      	nop
- 80050ec:	20000698 	.word	0x20000698
- 80050f0:	20000d60 	.word	0x20000d60
+ 80050d8:	bd38      	pop	{r3, r4, r5, pc}
+ 80050da:	bf00      	nop
+ 80050dc:	20000698 	.word	0x20000698
+ 80050e0:	20000d60 	.word	0x20000d60
 
-080050f4 <HAL_I2C_SlaveRxCpltCallback>:
+080050e4 <HAL_I2C_SlaveRxCpltCallback>:
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
- 80050f4:	b538      	push	{r3, r4, r5, lr}
- 80050f6:	4605      	mov	r5, r0
+ 80050e4:	b538      	push	{r3, r4, r5, lr}
+ 80050e6:	4605      	mov	r5, r0
 	for(int i = 0; i < numActiveI2Cs; i++) {
- 80050f8:	2400      	movs	r4, #0
- 80050fa:	e000      	b.n	80050fe <HAL_I2C_SlaveRxCpltCallback+0xa>
- 80050fc:	3401      	adds	r4, #1
- 80050fe:	4b0a      	ldr	r3, [pc, #40]	; (8005128 <HAL_I2C_SlaveRxCpltCallback+0x34>)
- 8005100:	881b      	ldrh	r3, [r3, #0]
- 8005102:	429c      	cmp	r4, r3
- 8005104:	da0e      	bge.n	8005124 <HAL_I2C_SlaveRxCpltCallback+0x30>
+ 80050e8:	2400      	movs	r4, #0
+ 80050ea:	e000      	b.n	80050ee <HAL_I2C_SlaveRxCpltCallback+0xa>
+ 80050ec:	3401      	adds	r4, #1
+ 80050ee:	4b0a      	ldr	r3, [pc, #40]	; (8005118 <HAL_I2C_SlaveRxCpltCallback+0x34>)
+ 80050f0:	881b      	ldrh	r3, [r3, #0]
+ 80050f2:	429c      	cmp	r4, r3
+ 80050f4:	da0e      	bge.n	8005114 <HAL_I2C_SlaveRxCpltCallback+0x30>
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
- 8005106:	4b09      	ldr	r3, [pc, #36]	; (800512c <HAL_I2C_SlaveRxCpltCallback+0x38>)
- 8005108:	f853 0024 	ldr.w	r0, [r3, r4, lsl #2]
- 800510c:	6803      	ldr	r3, [r0, #0]
- 800510e:	42ab      	cmp	r3, r5
- 8005110:	d1f4      	bne.n	80050fc <HAL_I2C_SlaveRxCpltCallback+0x8>
+ 80050f6:	4b09      	ldr	r3, [pc, #36]	; (800511c <HAL_I2C_SlaveRxCpltCallback+0x38>)
+ 80050f8:	f853 0024 	ldr.w	r0, [r3, r4, lsl #2]
+ 80050fc:	6803      	ldr	r3, [r0, #0]
+ 80050fe:	42ab      	cmp	r3, r5
+ 8005100:	d1f4      	bne.n	80050ec <HAL_I2C_SlaveRxCpltCallback+0x8>
 			IT_CallBack_I2cRC(ActiveI2Cs[i]);
- 8005112:	f7ff ffcf 	bl	80050b4 <IT_CallBack_I2cRC>
+ 8005102:	f7ff ffcf 	bl	80050a4 <IT_CallBack_I2cRC>
 			ActiveI2Cs[i]->RxStatus = Completed;
- 8005116:	4b05      	ldr	r3, [pc, #20]	; (800512c <HAL_I2C_SlaveRxCpltCallback+0x38>)
- 8005118:	f853 3024 	ldr.w	r3, [r3, r4, lsl #2]
- 800511c:	2203      	movs	r2, #3
- 800511e:	f883 20d9 	strb.w	r2, [r3, #217]	; 0xd9
- 8005122:	e7eb      	b.n	80050fc <HAL_I2C_SlaveRxCpltCallback+0x8>
+ 8005106:	4b05      	ldr	r3, [pc, #20]	; (800511c <HAL_I2C_SlaveRxCpltCallback+0x38>)
+ 8005108:	f853 3024 	ldr.w	r3, [r3, r4, lsl #2]
+ 800510c:	2203      	movs	r2, #3
+ 800510e:	f883 20d9 	strb.w	r2, [r3, #217]	; 0xd9
+ 8005112:	e7eb      	b.n	80050ec <HAL_I2C_SlaveRxCpltCallback+0x8>
 }
- 8005124:	bd38      	pop	{r3, r4, r5, pc}
- 8005126:	bf00      	nop
- 8005128:	20000698 	.word	0x20000698
- 800512c:	20000d60 	.word	0x20000d60
+ 8005114:	bd38      	pop	{r3, r4, r5, pc}
+ 8005116:	bf00      	nop
+ 8005118:	20000698 	.word	0x20000698
+ 800511c:	20000d60 	.word	0x20000d60
+
+08005120 <THL_main>:
+#include "THL_Library_Basic.h"
+#include "THL_I2cTester.h"
+__weak void THL_main(void) {
+ 8005120:	b508      	push	{r3, lr}
+	//testUsart();
+	testI2c();
+ 8005122:	f7ff fedf 	bl	8004ee4 <testI2c>
+	delay(1000);
+ 8005126:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
+ 800512a:	f000 f805 	bl	8005138 <delay>
+ 800512e:	bd08      	pop	{r3, pc}
 
 08005130 <millis>:
 void delay(uint32_t Time) {
@@ -11969,7 +11969,7 @@ USART *newUSART(USART* instance, UART_HandleTypeDef *huart) {
  800519a:	f85d 4b04 	ldr.w	r4, [sp], #4
  800519e:	4770      	bx	lr
  80051a0:	2000069a 	.word	0x2000069a
- 80051a4:	20000e50 	.word	0x20000e50
+ 80051a4:	20000e60 	.word	0x20000e60
 
 080051a8 <newMainUSART>:
 
@@ -11984,15 +11984,15 @@ USART *newMainUSART(UART_HandleTypeDef *huart) {
  80051ae:	f7ff ffcf 	bl	8005150 <newUSART>
 }
  80051b2:	bd08      	pop	{r3, pc}
- 80051b4:	20000d78 	.word	0x20000d78
+ 80051b4:	20000d88 	.word	0x20000d88
 
-080051b8 <usartSend>:
+080051b8 <usartWrite>:
 /*=========================================================================*/
 
 
 
 /*==============================Transmission===============================*/
-void usartSend(USART* instance) {
+void usartWrite(USART* instance) {
  80051b8:	b570      	push	{r4, r5, r6, lr}
  80051ba:	4605      	mov	r5, r0
 	HAL_StatusTypeDef Status;
@@ -12008,23 +12008,23 @@ void usartSend(USART* instance) {
  80051d2:	f7fe fe9e 	bl	8003f12 <HAL_UART_Transmit>
 	if(Status == HAL_BUSY) instance->TxStatus = InProcess;
  80051d6:	2802      	cmp	r0, #2
- 80051d8:	d008      	beq.n	80051ec <usartSend+0x34>
+ 80051d8:	d008      	beq.n	80051ec <usartWrite+0x34>
 	else if(Status == HAL_TIMEOUT) {
  80051da:	2803      	cmp	r0, #3
- 80051dc:	d00a      	beq.n	80051f4 <usartSend+0x3c>
+ 80051dc:	d00a      	beq.n	80051f4 <usartWrite+0x3c>
 		__HAL_UNLOCK(instance->huart);
 		instance->huart->gState = HAL_UART_STATE_READY;
 		
-		throwException("THL_Usart.c: usartSend() | TimeOut");
+		throwException("THL_Usart.c: usartWrite() | TimeOut");
 	}
 	else if(Status == HAL_ERROR) {
  80051de:	2801      	cmp	r0, #1
- 80051e0:	d017      	beq.n	8005212 <usartSend+0x5a>
+ 80051e0:	d017      	beq.n	8005212 <usartWrite+0x5a>
 		instance->TxStatus = Error;
-		throwException("THL_Usart.c: usartSend() | Error");
+		throwException("THL_Usart.c: usartWrite() | Error");
 	}
 	else if(Status == HAL_OK) instance->TxStatus = Completed;
- 80051e2:	b910      	cbnz	r0, 80051ea <usartSend+0x32>
+ 80051e2:	b910      	cbnz	r0, 80051ea <usartWrite+0x32>
  80051e4:	2303      	movs	r3, #3
  80051e6:	f885 30d4 	strb.w	r3, [r5, #212]	; 0xd4
  80051ea:	bd70      	pop	{r4, r5, r6, pc}
@@ -12043,15 +12043,15 @@ void usartSend(USART* instance) {
  8005202:	682b      	ldr	r3, [r5, #0]
  8005204:	2220      	movs	r2, #32
  8005206:	f883 2039 	strb.w	r2, [r3, #57]	; 0x39
-		throwException("THL_Usart.c: usartSend() | TimeOut");
- 800520a:	4805      	ldr	r0, [pc, #20]	; (8005220 <usartSend+0x68>)
+		throwException("THL_Usart.c: usartWrite() | TimeOut");
+ 800520a:	4805      	ldr	r0, [pc, #20]	; (8005220 <usartWrite+0x68>)
  800520c:	f000 f868 	bl	80052e0 <throwException>
  8005210:	bd70      	pop	{r4, r5, r6, pc}
 		instance->TxStatus = Error;
  8005212:	2305      	movs	r3, #5
  8005214:	f885 30d4 	strb.w	r3, [r5, #212]	; 0xd4
-		throwException("THL_Usart.c: usartSend() | Error");
- 8005218:	4802      	ldr	r0, [pc, #8]	; (8005224 <usartSend+0x6c>)
+		throwException("THL_Usart.c: usartWrite() | Error");
+ 8005218:	4802      	ldr	r0, [pc, #8]	; (8005224 <usartWrite+0x6c>)
  800521a:	f000 f861 	bl	80052e0 <throwException>
  800521e:	bd70      	pop	{r4, r5, r6, pc}
  8005220:	0800823c 	.word	0x0800823c
@@ -12094,13 +12094,13 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
  8005258:	bd38      	pop	{r3, r4, r5, pc}
  800525a:	bf00      	nop
  800525c:	2000069a 	.word	0x2000069a
- 8005260:	20000e50 	.word	0x20000e50
+ 8005260:	20000e60 	.word	0x20000e60
 
 08005264 <printf_u>:
 
 void print(USART* instance, Format_Param) {
 	formatStrings(instance->TxBuffer);
-	usartSend(instance);
+	usartWrite(instance);
 }
 void printf_u(Format_Param) {
  8005264:	b40f      	push	{r0, r1, r2, r3}
@@ -12113,16 +12113,16 @@ void printf_u(Format_Param) {
  8005272:	4c06      	ldr	r4, [pc, #24]	; (800528c <printf_u+0x28>)
  8005274:	4620      	mov	r0, r4
  8005276:	f000 f8b1 	bl	80053dc <vsprintf>
-	usartSend(&DefaultUSART);
+	usartWrite(&DefaultUSART);
  800527a:	1f20      	subs	r0, r4, #4
- 800527c:	f7ff ff9c 	bl	80051b8 <usartSend>
+ 800527c:	f7ff ff9c 	bl	80051b8 <usartWrite>
 }
  8005280:	b002      	add	sp, #8
  8005282:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
  8005286:	b004      	add	sp, #16
  8005288:	4770      	bx	lr
  800528a:	bf00      	nop
- 800528c:	20000d7c 	.word	0x20000d7c
+ 800528c:	20000d8c 	.word	0x20000d8c
 
 08005290 <IT_CallBack_UsartRC>:
 			ActiveUSARTs[i]->RxStatus = Completed;
@@ -12164,7 +12164,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
  80052c4:	bd38      	pop	{r3, r4, r5, pc}
  80052c6:	bf00      	nop
  80052c8:	2000069a 	.word	0x2000069a
- 80052cc:	20000e50 	.word	0x20000e50
+ 80052cc:	20000e60 	.word	0x20000e60
 
 080052d0 <HAL_UART_ErrorCallback>:
 
@@ -12278,7 +12278,7 @@ LoopFillZerobss:
   ldr  r2, =_sbss
  8005330:	2000067c 	.word	0x2000067c
   ldr  r3, = _ebss
- 8005334:	20000eb0 	.word	0x20000eb0
+ 8005334:	20000ec0 	.word	0x20000ec0
 
 08005338 <ADC_IRQHandler>:
  * @retval None       
@@ -15736,13 +15736,13 @@ Infinite_Loop:
  80074b8:	4801      	ldr	r0, [pc, #4]	; (80074c0 <__malloc_lock+0x8>)
  80074ba:	f000 bcaf 	b.w	8007e1c <__retarget_lock_acquire_recursive>
  80074be:	bf00      	nop
- 80074c0:	20000ea8 	.word	0x20000ea8
+ 80074c0:	20000eb8 	.word	0x20000eb8
 
 080074c4 <__malloc_unlock>:
  80074c4:	4801      	ldr	r0, [pc, #4]	; (80074cc <__malloc_unlock+0x8>)
  80074c6:	f000 bcaa 	b.w	8007e1e <__retarget_lock_release_recursive>
  80074ca:	bf00      	nop
- 80074cc:	20000ea8 	.word	0x20000ea8
+ 80074cc:	20000eb8 	.word	0x20000eb8
 
 080074d0 <_Balloc>:
  80074d0:	b570      	push	{r4, r5, r6, lr}
@@ -16340,7 +16340,7 @@ Infinite_Loop:
  8007a86:	b103      	cbz	r3, 8007a8a <_sbrk_r+0x1a>
  8007a88:	602b      	str	r3, [r5, #0]
  8007a8a:	bd38      	pop	{r3, r4, r5, pc}
- 8007a8c:	20000ea0 	.word	0x20000ea0
+ 8007a8c:	20000eb0 	.word	0x20000eb0
 
 08007a90 <__ssprint_r>:
  8007a90:	6893      	ldr	r3, [r2, #8]
@@ -17059,7 +17059,7 @@ Infinite_Loop:
  8008164:	601a      	str	r2, [r3, #0]
  8008166:	4770      	bx	lr
  8008168:	200006d0 	.word	0x200006d0
- 800816c:	20000eb0 	.word	0x20000eb0
+ 800816c:	20000ec0 	.word	0x20000ec0
 
 08008170 <_init>:
  8008170:	b5f8      	push	{r3, r4, r5, r6, r7, lr}

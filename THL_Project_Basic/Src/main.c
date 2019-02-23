@@ -43,7 +43,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "THL_main.h"
+#include "THL_Library_Basic.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

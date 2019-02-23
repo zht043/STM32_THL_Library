@@ -1,0 +1,10 @@
+THL_SPI.c:22:6:newSPI	4	static
+THL_SPI.c:36:6:newSPI_CS	16	static
+THL_SPI.c:61:7:spiReadWrite	32	static
+THL_SPI.c:87:9:spiReadWriteReg	8	static
+THL_SPI.c:97:7:spiReadWrite_IT	24	static
+THL_SPI.c:119:10:spiReadWriteReg_IT	8	static
+THL_SPI.c:129:7:spiReadWrite_DMA	24	static
+THL_SPI.c:151:10:spiReadWriteReg_DMA	8	static
+THL_SPI.c:175:13:IT_CallBack_SpiTRC	0	static
+THL_SPI.c:161:6:HAL_SPI_TxRxCpltCallback	16	static

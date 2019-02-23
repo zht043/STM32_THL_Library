@@ -1,0 +1,7 @@
+THL_GPIO.c:9:7:newGPIO	0	static
+THL_GPIO.c:21:9:gpioRead	8	static
+THL_GPIO.c:28:6:turnOn	8	static
+THL_GPIO.c:32:6:turnOff	8	static
+THL_GPIO.c:17:6:gpioWrite	8	static
+THL_GPIO.c:35:6:blink	16	static
+THL_GPIO.c:42:6:toggle	8	static
