@@ -1,4 +1,0 @@
-THL_I2cTester.c:24:6:setup	8	static
-THL_I2cTester.c:36:6:testTwoNucleoBoardComm	24	static
-THL_I2cTester.c:110:6:testI2c	8	static
-THL_I2cTester.c:114:6:Exception_Handler	8	static

@@ -238,7 +238,7 @@ void testUsart(void) {
 	 *
 	 *Replace ??? with the number of desire buffer sizes*/
 	Led = newGPIO(&led_pin, LD2_GPIO_Port, LD2_Pin);
-	testPrints();
+	//testPrints();
 	testScans();
 }
 void Exception_Handler(const char* str) {

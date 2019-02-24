@@ -1,3 +1,5 @@
+
+#ifdef xxx
 /*
  * THL_I2cTester.c
  *
@@ -114,4 +116,4 @@ void testI2c(void) {
 void Exception_Handler(const char* str) {
 	printf_u("\r%s\r\n",str);
 }
-
+#endif

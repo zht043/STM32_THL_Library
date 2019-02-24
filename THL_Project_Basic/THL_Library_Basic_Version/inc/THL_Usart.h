@@ -8,8 +8,8 @@
 
 #define USART_TxBuffer_Size 100
 #define USART_RxBuffer_Size 100
-#define USART_Default_TxTimeOut 1000  // 1 second
-#define USART_Default_RxTimeOut 1000  // 1 second
+#define USART_Default_TxTimeOut 0xFFFF  // 1 second
+#define USART_Default_RxTimeOut 0xFFFFFFFF  // 1 second
 
 
 typedef struct{
@@ -32,6 +32,7 @@ USART *newMainUSART(UART_HandleTypeDef *huart);
 
 /*==============================Polling Mode===============================*/
 /*All are blocking mode*/
+
 void usartWrite(USART* instance);
 char* usartRead(USART* instance, uint16_t size);
 

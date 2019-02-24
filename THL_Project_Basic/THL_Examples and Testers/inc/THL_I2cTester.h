@@ -10,6 +10,7 @@
 
 #include "THL_Library_Basic.h"
 #include <string.h>
+#include "Prj_Main.h"
 
 void testI2c(void);
 
