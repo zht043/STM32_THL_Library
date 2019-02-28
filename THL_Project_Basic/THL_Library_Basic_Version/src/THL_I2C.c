@@ -99,7 +99,7 @@ char* i2cRead(I2C* instance, uint16_t Mode, uint16_t size) {
 void i2cWriteReg(I2C* instance, uint16_t devAddress, uint16_t regAddress, uint8_t byte) {
 	HAL_StatusTypeDef Status;
 	instance->TxByte = byte;
-	Status = HAL_I2C_Mem_Write(instance->hi2c, devAddress, regAddress,
+	Status = HAL_I2C_Mem_Write(instance->hi2c, MasterMode(devAddress), regAddress,
 						instance->AddressSize8Bit?I2C_MEMADD_SIZE_8BIT:I2C_MEMADD_SIZE_16BIT ,
 						&instance->TxByte, 1, instance->TxTimeOut);
 	if(Status == HAL_BUSY) instance->TxStatus = InProcess;
@@ -121,7 +121,7 @@ void i2cWriteReg(I2C* instance, uint16_t devAddress, uint16_t regAddress, uint8_
 /*Receive 1 byte only from a particular register, buffer-less, master mode only*/
 uint8_t* i2cReadReg(I2C* instance, uint16_t devAddress, uint16_t regAddress) {
 	HAL_StatusTypeDef Status;
-	Status = HAL_I2C_Mem_Read(instance->hi2c, devAddress, regAddress,
+	Status = HAL_I2C_Mem_Read(instance->hi2c, MasterMode(devAddress), regAddress,
 			instance->AddressSize8Bit?I2C_MEMADD_SIZE_8BIT:I2C_MEMADD_SIZE_16BIT ,
 			&instance->RxByte, 1, instance->RxTimeOut);
 

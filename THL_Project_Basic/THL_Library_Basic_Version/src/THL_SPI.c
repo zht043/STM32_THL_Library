@@ -10,6 +10,7 @@
 
 #ifdef HAL_SPI_MODULE_ENABLED
 
+#define DummyByte 0x00
 #define Max_Num_SPIs 10
 uint16_t numActiveSPIs = 0;
 SPI* ActiveSPIs[Max_Num_SPIs];
@@ -84,11 +85,20 @@ char* spiReadWrite(SPI* instance) {
 }
 
 
-uint8_t spiReadWriteReg(SPI* instance, uint8_t regAddress, uint8_t byte) {
-	instance->TxBuffer[0] = (uint8_t)regAddress;
-	instance->TxBuffer[1] = (uint8_t)byte;
-	return (uint8_t)spiReadWrite(instance)[1];
+void spiWriteReg(SPI* instance, uint8_t regAddress, uint8_t byte) {
+	instance->TxBuffer[0] = (char)(regAddress | 0x80); //0x80 = 1000,0000 in binary
+	instance->TxBuffer[1] = (char)byte;
+	instance->TxBuffer[2] = '\0';
+	spiReadWrite(instance);
 }
+
+uint8_t* spiReadReg(SPI* instance, uint8_t regAddress) {
+	instance->TxBuffer[0] = (char)(regAddress & ~0x80); //0x80 = 1000,0000 in binary
+	instance->TxBuffer[1] = DummyByte;
+	instance->TxBuffer[2] = '\0';
+	return (uint8_t*)spiReadWrite(instance);
+}
+
 /*=========================================================================*/
 
 
@@ -116,11 +126,20 @@ char* spiReadWrite_IT(SPI* instance) {
 	return instance->RxBuffer;
 }
 
-uint8_t* spiReadWriteReg_IT(SPI* instance, uint8_t regAddress, uint8_t byte) {
-	instance->TxBuffer[0] = (uint8_t)regAddress;
-	instance->TxBuffer[1] = (uint8_t)byte;
-	return (uint8_t*)&spiReadWrite_IT(instance)[1];
+void spiWriteReg_IT(SPI* instance, uint8_t regAddress, uint8_t byte) {
+	instance->TxBuffer[0] = (char)(regAddress | 0x80); //0x80 = 1000,0000 in binary
+	instance->TxBuffer[1] = (char)byte;
+	instance->TxBuffer[2] = '\0';
+	spiReadWrite(instance);
 }
+
+uint8_t* spiReadReg_IT(SPI* instance, uint8_t regAddress) {
+	instance->TxBuffer[0] = (char)(regAddress & ~0x80); //0x80 = 1000,0000 in binary
+	instance->TxBuffer[1] = DummyByte;
+	instance->TxBuffer[2] = '\0';
+	return (uint8_t*)spiReadWrite(instance);
+}
+
 /*=========================================================================*/
 
 
@@ -148,11 +167,20 @@ char* spiReadWrite_DMA(SPI* instance) {
 	return instance->RxBuffer;
 }
 
-uint8_t* spiReadWriteReg_DMA(SPI* instance, uint8_t regAddress, uint8_t byte) {
-	instance->TxBuffer[0] = (uint8_t)regAddress;
-	instance->TxBuffer[1] = (uint8_t)byte;
-	return (uint8_t*)&spiReadWrite_DMA(instance)[1];
+void spiWriteReg_DMA(SPI* instance, uint8_t regAddress, uint8_t byte) {
+	instance->TxBuffer[0] = (char)(regAddress | 0x80); //0x80 = 1000,0000 in binary
+	instance->TxBuffer[1] = (char)byte;
+	instance->TxBuffer[2] = '\0';
+	spiReadWrite(instance);
 }
+
+uint8_t* spiReadReg_DMA(SPI* instance, uint8_t regAddress) {
+	instance->TxBuffer[0] = (char)(regAddress & ~0x80); //0x80 = 1000,0000 in binary
+	instance->TxBuffer[1] = DummyByte;
+	instance->TxBuffer[2] = '\0';
+	return (uint8_t*)spiReadWrite(instance);
+}
+
 /*=========================================================================*/
 
 

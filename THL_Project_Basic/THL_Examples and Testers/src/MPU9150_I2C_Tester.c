@@ -1,10 +1,6 @@
-/*
- * THL_I2cMasterTester.c
- *
- *  Created on: Feb 5, 2019
- *      Author: zhang
- */
+
 #include "MPU9150_I2C_Tester.h"
+#include "main.h"
 
 GPIO led_pin;
 GPIO* Led;

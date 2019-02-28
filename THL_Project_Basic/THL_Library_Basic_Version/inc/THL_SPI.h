@@ -16,7 +16,7 @@
 
 #define SPI_TxBuffer_Size 100
 #define SPI_RxBuffer_Size 100
-#define SPI_Default_TimeOut 10000  // 10 second
+#define SPI_Default_TimeOut 0xFFFF
 #define SPI_Dummy_Byte 0x00
 
 typedef struct{
@@ -40,21 +40,24 @@ SPI *newSPI_CS(SPI* instance, SPI_HandleTypeDef *hspi, GPIO* ChipSelect);
 
 /*==============================Polling Mode===============================*/
 char* spiReadWrite(SPI* instance);
-uint8_t spiReadWriteReg(SPI* instance, uint8_t regAddress, uint8_t byte);
+void spiWriteReg(SPI* instance, uint8_t regAddress, uint8_t byte);
+uint8_t* spiReadReg(SPI* instance, uint8_t regAddress);
 /*=========================================================================*/
 
 
 
 /*==============================Interrupt Mode===============================*/
 char* spiReadWrite_IT(SPI* instance);
-uint8_t* spiReadWriteReg_IT(SPI* instance, uint8_t regAddress, uint8_t byte);
+void spiWriteReg_IT(SPI* instance, uint8_t regAddress, uint8_t byte);
+uint8_t* spiReadReg_IT(SPI* instance, uint8_t regAddress);
 /*=========================================================================*/
 
 
 
 /*==============================DMA Mode===============================*/
 char* spiReadWrite_DMA(SPI* instance);
-uint8_t* spiReadWriteReg_DMA(SPI* instance, uint8_t regAddress, uint8_t byte);
+void spiWriteReg_DMA(SPI* instance, uint8_t regAddress, uint8_t byte);
+uint8_t* spiReadReg_DMA(SPI* instance, uint8_t regAddress);
 /*=========================================================================*/
 
 
