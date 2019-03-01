@@ -9,5 +9,5 @@ THL_SPI.c:136:10:spiReadReg_IT	8	static
 THL_SPI.c:148:7:spiReadWrite_DMA	24	static
 THL_SPI.c:170:6:spiWriteReg_DMA	8	static
 THL_SPI.c:177:10:spiReadReg_DMA	8	static
-THL_SPI.c:203:13:IT_CallBack_SpiTRC	0	static
+THL_SPI.c:205:13:IT_CallBack_SpiTRC	0	static
 THL_SPI.c:189:6:HAL_SPI_TxRxCpltCallback	16	static

@@ -28,45 +28,41 @@ static void setup(void) {
 	button = newGPIO(&buttonMem, B1_GPIO_Port, B1_Pin);
 }
 
-
-//#define Master_Board
-#define Slave_Board
+/*uncomment the board u wanna flash to, then comment the other board*/
+#define Master_Board    //code to be downloaded to the Master board
+//#define Slave_Board     //code to be downloaded the Slave  board
 
 static void testTwoNucleoBoardComm(void) {
 	setup();
 	char* receivedString;
+
 #ifdef Master_Board
-
-
 	gpioWrite(led, High);
 	while(gpioRead(button));
 	gpioWrite(led, Low);
+
 	//Normal Polling Mode
-	strcpy(spiBus->TxBuffer, "A message from the Master");
+	strcpy(spiBus->TxBuffer, "A message from the Master [Blocking Mode]");
 	receivedString = spiReadWrite(spiBus);
 	printf_u("\rMessage Sent!!!!!!!!!!!!!!!!!\r\n");
 	for(int i = 0; i<5;i++) blink(led, 300);
 	printf_u("\rMessag from slave: %s\r\n", receivedString);
-	/*//Non-Blocking interrupt mode
-	gpioWrite(led, Low);
-	strcpy(i2cBus->TxBuffer, "Message B from the Master");
-	i2cWrite_IT(i2cBus, MasterMode(Target_Address));
-	while(i2cBus->TxStatus != Completed);
-*/
-	/*
-	  //Non-Blocking DMA mode
-	gpioWrite(led, Low);
-	//Test continous Writeing
-	for(int i = 0; i < 3; i++) {
-		strcpy(i2cBus->TxBuffer, "Message C from the Master");
-		i2cWrite_DMA(i2cBus, MasterMode(Target_Address));
-		while(i2cBus->TxStatus != Completed);
 
-		//Give slave board a bit time to print
-		delay(1000);
-	}*/
+	// Non-Blocking interrupt mode or Non-Blocking DMA mode
+	strcpy(spiBus->TxBuffer, "A message from the Master [Non Blocking Mode]");
+	//for(int i = 0; i < 3; i++) {
+	while(1) {
+		//spiReadWrite_DMA(spiBus);
+		spiReadWrite_IT(spiBus);
+
+		printf_u("\rMessage Sent!!!!!!!!!!!!!!!!!\r\n");
+		while(spiBus->Status == InProcess);
+		printf_u("\rMessag from slave: %s\r\n", spiBus->RxBuffer);
+		delay(100);
+	}
 
 #endif
+
 #ifdef Slave_Board
 
 	spiBus->hspi->Init.Mode = SPI_MODE_SLAVE;
@@ -78,32 +74,32 @@ static void testTwoNucleoBoardComm(void) {
 	gpioWrite(led, High);
 
 	//Normal Polling Mode
-	strcpy(spiBus->TxBuffer, "A message from the Slave.");
+	strcpy(spiBus->TxBuffer, "A message from the Slave! [Blocking Mode]");
 	receivedString = spiReadWrite(spiBus);
 	toggle(led);
-	printf_u("\rMessag from Master: %s\r\n", receivedString);
+	printf_u("\rMessage from Master: %s\r\n", receivedString);
 
-	/*
-	// Non-Blocking interrupt mode
-
-
-	// Non-Blocking DMA mode
+	// Non-Blocking interrupt mode or Non-Blocking DMA mode
 	gpioWrite(led, High);
-	i2cRead_DMA(i2cBus, SlaveMode, 25);
+	strcpy(spiBus->TxBuffer, "A message from the Slave! [Non Blocking Mode]");
+
+	//spiReadWrite_DMA(spiBus);
+	spiReadWrite_IT(spiBus);
+
+	int i = 0;
 	while(1) {
-		if(i2cBus->RxStatus == Completed) {
+		if(spiBus->Status == Completed) {
 			gpioWrite(led, Low);
+			printf_u("\n\rMessage from Master: %s\r\n", spiBus->RxBuffer);
 
-			//Printing the previous 25 bytes
-			printf_u("\r=================================\r\n");
-			printf_u("\rReceived: \r\n");
-			printf_u("\r%s\r\n", i2cBus->RxBuffer);
-			printf_u("\r=================================\r\n\n");
-
-			//Reading the next 25 bytes
-			i2cRead_DMA(i2cBus, SlaveMode, 25);
+			//spiReadWrite_DMA(spiBus);
+			spiReadWrite_IT(spiBus);
 		}
-	}*/
+		else {
+			i++;
+			printf_u("\r%d",i);
+		}
+	}
 
 #endif
 }

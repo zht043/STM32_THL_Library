@@ -191,7 +191,9 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
 		if(ActiveSPIs[i]->hspi == hspi) {
 			IT_CallBack_SpiTRC(ActiveSPIs[i]);
 			ActiveSPIs[i]->Status = Completed;
-			if(hspi->Init.NSS == SPI_NSS_SOFT) gpioWrite(ActiveSPIs[i]->CS, High);
+			if(hspi->Init.NSS == SPI_NSS_SOFT && hspi->Init.Mode == SPI_MODE_MASTER) {
+				gpioWrite(ActiveSPIs[i]->CS, High);
+			}
 		}
 	}
 }
