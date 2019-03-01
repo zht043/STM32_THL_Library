@@ -50,10 +50,10 @@ static void testTwoNucleoBoardComm(void) {
 
 	// Non-Blocking interrupt mode or Non-Blocking DMA mode
 	strcpy(spiBus->TxBuffer, "A message from the Master [Non Blocking Mode]");
-	//for(int i = 0; i < 3; i++) {
-	while(1) {
-		//spiReadWrite_DMA(spiBus);
-		spiReadWrite_IT(spiBus);
+	for(int i = 0; i < 3; i++) {
+	//while(1) {
+		spiReadWrite_DMA(spiBus);
+		//spiReadWrite_IT(spiBus);
 
 		printf_u("\rMessage Sent!!!!!!!!!!!!!!!!!\r\n");
 		while(spiBus->Status == InProcess);
@@ -83,8 +83,8 @@ static void testTwoNucleoBoardComm(void) {
 	gpioWrite(led, High);
 	strcpy(spiBus->TxBuffer, "A message from the Slave! [Non Blocking Mode]");
 
-	//spiReadWrite_DMA(spiBus);
-	spiReadWrite_IT(spiBus);
+	spiReadWrite_DMA(spiBus);
+	//spiReadWrite_IT(spiBus);
 
 	int i = 0;
 	while(1) {
@@ -92,8 +92,8 @@ static void testTwoNucleoBoardComm(void) {
 			gpioWrite(led, Low);
 			printf_u("\n\rMessage from Master: %s\r\n", spiBus->RxBuffer);
 
-			//spiReadWrite_DMA(spiBus);
-			spiReadWrite_IT(spiBus);
+			spiReadWrite_DMA(spiBus);
+			//spiReadWrite_IT(spiBus);
 		}
 		else {
 			i++;
