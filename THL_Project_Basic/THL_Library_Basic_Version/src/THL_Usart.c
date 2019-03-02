@@ -100,7 +100,7 @@ void usartWrite_DMA(USART* instance) {
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 	for(int i = 0; i < numActiveUSARTs; i++) {
 		if(ActiveUSARTs[i]->huart == huart) {
-			IT_CallBack_UsartTC(ActiveUSARTs[i]);
+			usartTC_IT_CallBack(ActiveUSARTs[i]);
 			ActiveUSARTs[i]->TxStatus = Completed;
 		}
 	}
@@ -110,7 +110,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
   *interrupt is triggered by usart completing 
   *tranfering data
   */
-__weak void IT_CallBack_UsartTC(USART* instance){
+__weak void usartTC_IT_CallBack(USART* instance){
 	 UNUSED(instance);
 }
 
@@ -238,13 +238,13 @@ char* usartRead_DMA(USART* instance, uint16_t size) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	for(int i = 0; i < numActiveUSARTs; i++) {
 		if(ActiveUSARTs[i]->huart == huart) {
-			IT_CallBack_UsartRC(ActiveUSARTs[i]);
+			usartRC_IT_CallBack(ActiveUSARTs[i]);
 			ActiveUSARTs[i]->RxStatus = Completed;
 		}
 	}
 }
 
-__weak void IT_CallBack_UsartRC(USART* instance){
+__weak void usartRC_IT_CallBack(USART* instance){
 	 UNUSED(instance);
 }
 

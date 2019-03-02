@@ -14,4 +14,4 @@ MPU9150_I2C_Tester.c:252:19:MPU_SetAccelFSRange	8	static
 MPU9150_I2C_Tester.c:267:19:MPU_SetGyroFSRange	8	static
 MPU9150_I2C_Tester.c:229:19:MPU_Init	8	static
 MPU9150_I2C_Tester.c:579:6:testI2cMaster	96	static
-MPU9150_I2C_Tester.c:602:6:IT_CallBack_UsartTC	8	static
+MPU9150_I2C_Tester.c:602:6:usartTC_IT_CallBack	8	static

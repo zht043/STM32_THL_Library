@@ -32,27 +32,20 @@ SPI *newSPI(SPI* instance, SPI_HandleTypeDef *hspi) {
 	ActiveSPIs[numActiveSPIs++] = instance;
 	return instance;
 }
-/* Pseudo-Constructor with Chip Select
- * */
-SPI *newSPI_CS(SPI* instance, SPI_HandleTypeDef *hspi, GPIO* ChipSelect) {
-	if(hspi->Init.NSS != SPI_NSS_SOFT) {
-		throwException("THL_SPI.c: newSPI_CS | Plz use newSPI instead");
-		return instance;
-	}
-	instance->hspi = hspi;
-	instance->TxRxTimeOut = SPI_Default_TimeOut;
-	instance->Status = Ready;
-	instance->CS = ChipSelect;
+/*=========================================================================*/
 
-	for(int i = 0; i < numActiveSPIs; i++)
-		if(ActiveSPIs[i]->hspi == hspi) {
-			ActiveSPIs[i] = instance;
-			return instance;
-		}
-	ActiveSPIs[numActiveSPIs++] = instance;
 
-	gpioWrite(instance->CS, High);
-	return instance;
+
+/*==============================Chip Select================================*/
+/*For a SPI bus shared by multiple devices,
+ *BeginDevice/EndDevice functions enable/disable
+ *the particular chip_select pin wired to
+ *each of the devices. Only one device can be enabled at one times*/
+void spiBeginDevice(GPIO* chip_select) {
+	gpioWrite(chip_select, Low);  //Pull CS low to enable device
+}
+void spiEndDevice(GPIO* chip_select) {
+	gpioWrite(chip_select, High); //Pull CS High to disable device for another device
 }
 /*=========================================================================*/
 
@@ -60,7 +53,6 @@ SPI *newSPI_CS(SPI* instance, SPI_HandleTypeDef *hspi, GPIO* ChipSelect) {
 
 /*==============================Polling Mode===============================*/
 char* spiReadWrite(SPI* instance) {
-	if(instance->hspi->Init.NSS == SPI_NSS_SOFT) gpioWrite(instance->CS, Low);
 	HAL_StatusTypeDef Status;
 	Status = HAL_SPI_TransmitReceive(instance->hspi,
 									(uint8_t*)instance->TxBuffer,
@@ -80,25 +72,32 @@ char* spiReadWrite(SPI* instance) {
 		throwException("THL_SPI.c: spiReadWrite() | Error");
 	}
 	else if(Status == HAL_OK) instance->Status = Completed;
-	if(instance->hspi->Init.NSS == SPI_NSS_SOFT) gpioWrite(instance->CS, High);
 	return instance->RxBuffer;
 }
 
+uint8_t* spiReadWriteByte(SPI* instance, uint8_t byte) {
+	HAL_StatusTypeDef Status;
+	instance->TxByte = byte;
+	Status = HAL_SPI_TransmitReceive(instance->hspi,
+									&instance->TxByte,
+									&instance->RxByte,
+									1, instance->TxRxTimeOut);
+	if(Status == HAL_BUSY) instance->Status = InProcess;
+	else if(Status == HAL_TIMEOUT) {
+		instance->Status = TimeOut;
 
-void spiWriteReg(SPI* instance, uint8_t regAddress, uint8_t byte) {
-	instance->TxBuffer[0] = (char)(regAddress | 0x80); //0x80 = 1000,0000 in binary
-	instance->TxBuffer[1] = (char)byte;
-	instance->TxBuffer[2] = '\0';
-	spiReadWrite(instance);
+		__HAL_UNLOCK(instance->hspi);
+		instance->hspi->State = HAL_SPI_STATE_READY;
+
+		throwException("THL_SPI.c: spiReadWriteByte() | TimeOut");
+	}
+	else if(Status == HAL_ERROR) {
+		instance->Status = Error;
+		throwException("THL_SPI.c: spiReadWriteByte() | Error");
+	}
+	else if(Status == HAL_OK) instance->Status = Completed;
+	return &instance->RxByte;
 }
-
-uint8_t* spiReadReg(SPI* instance, uint8_t regAddress) {
-	instance->TxBuffer[0] = (char)(regAddress & ~0x80); //0x80 = 1000,0000 in binary
-	instance->TxBuffer[1] = DummyByte;
-	instance->TxBuffer[2] = '\0';
-	return (uint8_t*)spiReadWrite(instance);
-}
-
 /*=========================================================================*/
 
 
@@ -107,8 +106,6 @@ uint8_t* spiReadReg(SPI* instance, uint8_t regAddress) {
 char* spiReadWrite_IT(SPI* instance) {
 	//check if the previous reception is completed
 	if(instance->Status == InProcess) return instance->RxBuffer;
-
-	if(instance->hspi->Init.NSS == SPI_NSS_SOFT) gpioWrite(instance->CS, Low);
 
 	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
 	HAL_StatusTypeDef Status;
@@ -125,21 +122,20 @@ char* spiReadWrite_IT(SPI* instance) {
 	instance->Status = InProcess;
 	return instance->RxBuffer;
 }
-
-void spiWriteReg_IT(SPI* instance, uint8_t regAddress, uint8_t byte) {
-	instance->TxBuffer[0] = (char)(regAddress | 0x80); //0x80 = 1000,0000 in binary
-	instance->TxBuffer[1] = (char)byte;
-	instance->TxBuffer[2] = '\0';
-	spiReadWrite(instance);
+uint8_t* spiReadWriteByte_IT(SPI* instance, uint8_t byte) {
+	//check if the previous reception is completed
+	if(instance->Status == InProcess) return &instance->RxByte;
+	HAL_StatusTypeDef Status;
+	instance->TxByte = byte;
+	Status = HAL_SPI_TransmitReceive_IT(instance->hspi, &instance->TxByte, &instance->RxByte, 1);
+	if(Status == HAL_ERROR) {
+		instance->Status = Error;
+		throwException("SPI.c: spiReadWriteByte_IT() | Error");
+		return &instance->RxByte;
+	}
+	instance->Status = InProcess;
+	return &instance->RxByte;
 }
-
-uint8_t* spiReadReg_IT(SPI* instance, uint8_t regAddress) {
-	instance->TxBuffer[0] = (char)(regAddress & ~0x80); //0x80 = 1000,0000 in binary
-	instance->TxBuffer[1] = DummyByte;
-	instance->TxBuffer[2] = '\0';
-	return (uint8_t*)spiReadWrite(instance);
-}
-
 /*=========================================================================*/
 
 
@@ -148,8 +144,6 @@ uint8_t* spiReadReg_IT(SPI* instance, uint8_t regAddress) {
 char* spiReadWrite_DMA(SPI* instance) {
 	//check if the previous reception is completed
 	if(instance->Status == InProcess) return instance->RxBuffer;
-
-	if(instance->hspi->Init.NSS == SPI_NSS_SOFT) gpioWrite(instance->CS, Low);
 
 	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
 	HAL_StatusTypeDef Status;
@@ -167,20 +161,20 @@ char* spiReadWrite_DMA(SPI* instance) {
 	return instance->RxBuffer;
 }
 
-void spiWriteReg_DMA(SPI* instance, uint8_t regAddress, uint8_t byte) {
-	instance->TxBuffer[0] = (char)(regAddress | 0x80); //0x80 = 1000,0000 in binary
-	instance->TxBuffer[1] = (char)byte;
-	instance->TxBuffer[2] = '\0';
-	spiReadWrite(instance);
+uint8_t* spiReadWriteByte_DMA(SPI* instance, uint8_t byte) {
+	//check if the previous reception is completed
+	if(instance->Status == InProcess) return &instance->RxByte;
+	HAL_StatusTypeDef Status;
+	instance->TxByte = byte;
+	Status = HAL_SPI_TransmitReceive_DMA(instance->hspi, &instance->TxByte, &instance->RxByte, 1);
+	if(Status == HAL_ERROR) {
+		instance->Status = Error;
+		throwException("SPI.c: spiReadWriteByte_DMA() | Error");
+		return &instance->RxByte;
+	}
+	instance->Status = InProcess;
+	return &instance->RxByte;
 }
-
-uint8_t* spiReadReg_DMA(SPI* instance, uint8_t regAddress) {
-	instance->TxBuffer[0] = (char)(regAddress & ~0x80); //0x80 = 1000,0000 in binary
-	instance->TxBuffer[1] = DummyByte;
-	instance->TxBuffer[2] = '\0';
-	return (uint8_t*)spiReadWrite(instance);
-}
-
 /*=========================================================================*/
 
 
@@ -189,11 +183,8 @@ uint8_t* spiReadReg_DMA(SPI* instance, uint8_t regAddress) {
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
 	for(int i = 0; i < numActiveSPIs; i++) {
 		if(ActiveSPIs[i]->hspi == hspi) {
-			IT_CallBack_SpiTRC(ActiveSPIs[i]);
 			ActiveSPIs[i]->Status = Completed;
-			if(hspi->Init.NSS == SPI_NSS_SOFT && hspi->Init.Mode == SPI_MODE_MASTER) {
-				gpioWrite(ActiveSPIs[i]->CS, High);
-			}
+			spiTRC_IT_CallBack(ActiveSPIs[i]);
 		}
 	}
 }
@@ -202,7 +193,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
 
 
 /*==============================Interrupt Handler===============================*/
-__weak void IT_CallBack_SpiTRC(SPI* instance) {
+__weak void spiTRC_IT_CallBack(SPI* instance) {
 	UNUSED(instance);
 }
 /*=========================================================================*/

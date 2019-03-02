@@ -45,12 +45,12 @@ static void testTwoNucleoBoardComm(void) {
 
 	/*//Normal Polling Mode
 	strcpy(i2cBus->TxBuffer, "Message A from the Master");
-	i2cWrite(i2cBus, MasterMode(Target_Address));
+	i2cWrite(i2cBus, I2C_MasterMode(Target_Address));
 */
 	/*//Non-Blocking interrupt mode
 	gpioWrite(led, Low);
 	strcpy(i2cBus->TxBuffer, "Message B from the Master");
-	i2cWrite_IT(i2cBus, MasterMode(Target_Address));
+	i2cWrite_IT(i2cBus, I2C_MasterMode(Target_Address));
 	while(i2cBus->TxStatus != Completed);
 */
 	  //Non-Blocking DMA mode
@@ -58,7 +58,7 @@ static void testTwoNucleoBoardComm(void) {
 	//Test continous Writeing
 	for(int i = 0; i < 3; i++) {
 		strcpy(i2cBus->TxBuffer, "Message C from the Master");
-		i2cWrite_DMA(i2cBus, MasterMode(Target_Address));
+		i2cWrite_DMA(i2cBus, I2C_MasterMode(Target_Address));
 		while(i2cBus->TxStatus != Completed);
 
 		//Give slave board a bit time to print
@@ -75,7 +75,7 @@ static void testTwoNucleoBoardComm(void) {
 	/*//Normal Polling Mode
 	while(1) {
 		i2cBus->RxTimeOut = 0xFFFF;
-		i2cRead(i2cBus, SlaveMode, 25);
+		i2cRead(i2cBus, I2C_SlaveMode, 25);
 		printf_u("\r=================================\r\n");
 		printf_u("\rReceived: \r\n");
 		printf_u("\r%s\r\n", i2cBus->RxBuffer);
@@ -89,7 +89,7 @@ static void testTwoNucleoBoardComm(void) {
 
 	// Non-Blocking DMA mode
 	gpioWrite(led, High);
-	i2cRead_DMA(i2cBus, SlaveMode, 25);
+	i2cRead_DMA(i2cBus, I2C_SlaveMode, 25);
 	while(1) {
 		if(i2cBus->RxStatus == Completed) {
 			gpioWrite(led, Low);
@@ -101,7 +101,7 @@ static void testTwoNucleoBoardComm(void) {
 			printf_u("\r=================================\r\n\n");
 
 			//Reading the next 25 bytes
-			i2cRead_DMA(i2cBus, SlaveMode, 25);
+			i2cRead_DMA(i2cBus, I2C_SlaveMode, 25);
 		}
 	}
 

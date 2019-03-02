@@ -18,8 +18,8 @@
 #define I2C_Default_TxTimeOut 10000  // 10 second
 #define I2C_Default_RxTimeOut 10000  // 10 second
 
-#define MasterMode(devAddress) devAddress << 1
-#define SlaveMode 0xFFFF
+#define I2C_MasterMode(devAddress) devAddress << 1
+#define I2C_SlaveMode 0xFFFF
 
 typedef struct{
 	I2C_HandleTypeDef *hi2c;
@@ -76,8 +76,8 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c);
 
 
 /*==============================Interrupt Handler===============================*/
-__weak void IT_CallBack_I2cTC(I2C* instance);
-__weak void IT_CallBack_I2cRC(I2C* instance);
+__weak void i2cTC_IT_CallBack(I2C* instance);
+__weak void i2cRC_IT_CallBack(I2C* instance);
 /*=========================================================================*/
 
 

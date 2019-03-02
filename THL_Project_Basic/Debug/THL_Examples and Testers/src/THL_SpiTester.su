@@ -1,4 +1,4 @@
-THL_SpiTester.c:24:13:setup	8	static
-THL_SpiTester.c:35:13:testTwoNucleoBoardComm	24	static
-THL_SpiTester.c:108:6:testSpi	8	static
-THL_SpiTester.c:112:6:Exception_Handler	8	static
+THL_SpiTester.c:32:13:setup	8	static
+THL_SpiTester.c:114:13:testByteWiseReadWrite	32	static
+THL_SpiTester.c:168:6:testSpi	8	static
+THL_SpiTester.c:174:6:Exception_Handler	8	static

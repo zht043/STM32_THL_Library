@@ -599,6 +599,6 @@ void testI2cMaster(void) {
 	}
 }
 
-void IT_CallBack_UsartTC(USART* Device) {
+void usartTC_IT_CallBack(USART* Device) {
 	turnOn(Led);
 }

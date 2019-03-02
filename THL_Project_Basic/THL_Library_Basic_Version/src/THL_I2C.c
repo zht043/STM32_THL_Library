@@ -41,8 +41,8 @@ I2C *newI2C(I2C* instance, I2C_HandleTypeDef *hi2c) {
 void i2cWrite(I2C* instance, uint16_t Mode) {
 	HAL_StatusTypeDef Status;
 
-	if(Mode != SlaveMode)
-		//The Mode variable here in MasterMode includes devAddress
+	if(Mode != I2C_SlaveMode)
+		//The Mode variable here in I2C_MasterMode includes devAddress
 		Status = HAL_I2C_Master_Transmit(instance->hi2c, Mode /*devAddress*/, (uint8_t*)instance->TxBuffer,
 									     strlen(instance->TxBuffer),  instance->TxTimeOut);
 	else
@@ -70,8 +70,8 @@ char* i2cRead(I2C* instance, uint16_t Mode, uint16_t size) {
 	HAL_StatusTypeDef Status;
 	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
 
-	if(Mode != SlaveMode)
-		//The Mode variable here in MasterMode includes devAddress
+	if(Mode != I2C_SlaveMode)
+		//The Mode variable here in I2C_MasterMode includes devAddress
 		Status = HAL_I2C_Master_Receive(instance->hi2c, Mode /*devAddress*/,(uint8_t*)instance->RxBuffer,
 			 	 	 	   	   	   	   	size,  instance->RxTimeOut);
 	else
@@ -99,7 +99,7 @@ char* i2cRead(I2C* instance, uint16_t Mode, uint16_t size) {
 void i2cWriteReg(I2C* instance, uint16_t devAddress, uint16_t regAddress, uint8_t byte) {
 	HAL_StatusTypeDef Status;
 	instance->TxByte = byte;
-	Status = HAL_I2C_Mem_Write(instance->hi2c, MasterMode(devAddress), regAddress,
+	Status = HAL_I2C_Mem_Write(instance->hi2c, I2C_MasterMode(devAddress), regAddress,
 						instance->AddressSize8Bit?I2C_MEMADD_SIZE_8BIT:I2C_MEMADD_SIZE_16BIT ,
 						&instance->TxByte, 1, instance->TxTimeOut);
 	if(Status == HAL_BUSY) instance->TxStatus = InProcess;
@@ -121,7 +121,7 @@ void i2cWriteReg(I2C* instance, uint16_t devAddress, uint16_t regAddress, uint8_
 /*Receive 1 byte only from a particular register, buffer-less, master mode only*/
 uint8_t* i2cReadReg(I2C* instance, uint16_t devAddress, uint16_t regAddress) {
 	HAL_StatusTypeDef Status;
-	Status = HAL_I2C_Mem_Read(instance->hi2c, MasterMode(devAddress), regAddress,
+	Status = HAL_I2C_Mem_Read(instance->hi2c, I2C_MasterMode(devAddress), regAddress,
 			instance->AddressSize8Bit?I2C_MEMADD_SIZE_8BIT:I2C_MEMADD_SIZE_16BIT ,
 			&instance->RxByte, 1, instance->RxTimeOut);
 
@@ -148,8 +148,8 @@ void i2cWrite_IT(I2C* instance, uint16_t Mode) {
 	//check if the previous transmission is completed
 	if(instance->TxStatus == InProcess) return;
 	HAL_StatusTypeDef Status;
-	if(Mode != SlaveMode)
-		//The Mode variable here in MasterMode includes devAddress
+	if(Mode != I2C_SlaveMode)
+		//The Mode variable here in I2C_MasterMode includes devAddress
 		Status = HAL_I2C_Master_Transmit_IT(instance->hi2c, Mode /*Actually devAddress*/,
 			                       (uint8_t*)instance->TxBuffer, strlen(instance->TxBuffer));
 	else
@@ -170,8 +170,8 @@ char* i2cRead_IT(I2C* instance, uint16_t Mode, uint16_t size) {
 	HAL_StatusTypeDef Status;
 	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
 
-	if(Mode != SlaveMode)
-			//The Mode variable here in MasterMode includes devAddress
+	if(Mode != I2C_SlaveMode)
+			//The Mode variable here in I2C_MasterMode includes devAddress
 			Status = HAL_I2C_Master_Receive_IT(instance->hi2c, Mode /*Actually devAddress*/,
 				                       (uint8_t*)instance->RxBuffer, size);
 		else
@@ -229,8 +229,8 @@ void i2cWrite_DMA(I2C* instance, uint16_t Mode) {
 	//check if the previous transmission is completed
 	if(instance->TxStatus == InProcess) return;
 	HAL_StatusTypeDef Status;
-	if(Mode != SlaveMode)
-		//The Mode variable here in MasterMode includes devAddress
+	if(Mode != I2C_SlaveMode)
+		//The Mode variable here in I2C_MasterMode includes devAddress
 		Status = HAL_I2C_Master_Transmit_DMA(instance->hi2c, Mode /*Actually devAddress*/,
 			                       (uint8_t*)instance->TxBuffer, strlen(instance->TxBuffer));
 	else
@@ -251,8 +251,8 @@ char* i2cRead_DMA(I2C* instance, uint16_t Mode, uint16_t size) {
 	HAL_StatusTypeDef Status;
 	memset(instance->RxBuffer, 0, strlen(instance->RxBuffer));
 
-	if(Mode != SlaveMode)
-			//The Mode variable here in MasterMode includes devAddress
+	if(Mode != I2C_SlaveMode)
+			//The Mode variable here in I2C_MasterMode includes devAddress
 			Status = HAL_I2C_Master_Receive_DMA(instance->hi2c, Mode /*Actually devAddress*/,
 				                       (uint8_t*)instance->RxBuffer, size);
 		else
@@ -307,8 +307,8 @@ uint8_t* i2cReadReg_DMA(I2C* instance, uint16_t devAddress, uint16_t regAddress)
 void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	for(int i = 0; i < numActiveI2Cs; i++) {
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
-			IT_CallBack_I2cTC(ActiveI2Cs[i]);
 			ActiveI2Cs[i]->TxStatus = Completed;
+			i2cTC_IT_CallBack(ActiveI2Cs[i]);
 		}
 	}
 }
@@ -316,8 +316,8 @@ void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	for(int i = 0; i < numActiveI2Cs; i++) {
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
-			IT_CallBack_I2cRC(ActiveI2Cs[i]);
 			ActiveI2Cs[i]->RxStatus = Completed;
+			i2cRC_IT_CallBack(ActiveI2Cs[i]);
 		}
 	}
 }
@@ -325,8 +325,8 @@ void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	for(int i = 0; i < numActiveI2Cs; i++) {
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
-			IT_CallBack_I2cTC(ActiveI2Cs[i]);
 			ActiveI2Cs[i]->TxStatus = Completed;
+			i2cTC_IT_CallBack(ActiveI2Cs[i]);
 		}
 	}
 }
@@ -334,8 +334,8 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	for(int i = 0; i < numActiveI2Cs; i++) {
 		if(ActiveI2Cs[i]->hi2c == hi2c) {
-			IT_CallBack_I2cRC(ActiveI2Cs[i]);
 			ActiveI2Cs[i]->RxStatus = Completed;
+			i2cRC_IT_CallBack(ActiveI2Cs[i]);
 		}
 	}
 }
@@ -343,11 +343,11 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
 
 
 /*==============================Interrupt Handler===============================*/
-__weak void IT_CallBack_I2cTC(I2C* instance){
+__weak void i2cTC_IT_CallBack(I2C* instance){
 	 UNUSED(instance);
 }
 
-__weak void IT_CallBack_I2cRC(I2C* instance){
+__weak void i2cRC_IT_CallBack(I2C* instance){
 	 UNUSED(instance);
 }
 /*=========================================================================*/

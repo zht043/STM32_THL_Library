@@ -3,7 +3,7 @@ THL_Usart.c:44:8:newMainUSART	8	static
 THL_Usart.c:52:6:usartWrite	16	static
 THL_Usart.c:73:6:usartWrite_IT	16	static
 THL_Usart.c:86:6:usartWrite_DMA	16	static
-THL_Usart.c:113:13:IT_CallBack_UsartTC	0	static
+THL_Usart.c:113:13:usartTC_IT_CallBack	0	static
 THL_Usart.c:100:6:HAL_UART_TxCpltCallback	16	static
 THL_Usart.c:117:6:print	20	static
 THL_Usart.c:121:6:printf_u	16	static
@@ -16,7 +16,7 @@ THL_Usart.c:170:6:fastPrintf	8	static
 THL_Usart.c:181:7:usartRead	16	static
 THL_Usart.c:204:7:usartRead_IT	16	static
 THL_Usart.c:219:7:usartRead_DMA	16	static
-THL_Usart.c:247:13:IT_CallBack_UsartRC	0	static
+THL_Usart.c:247:13:usartRC_IT_CallBack	0	static
 THL_Usart.c:238:6:HAL_UART_RxCpltCallback	16	static
 THL_Usart.c:252:6:readWord	16	static
 THL_Usart.c:259:6:readLine	16	static

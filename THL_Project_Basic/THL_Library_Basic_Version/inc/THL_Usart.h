@@ -73,9 +73,9 @@ void fastPrintf(Format_Param);
 
 /*==============================Interrupt Handler===============================*/
 /*Overload this callback function to add user-defined handling program upon Transmission Completion */
-__weak void IT_CallBack_UsartTC(USART* instance);
+__weak void usartTC_IT_CallBack(USART* instance);
 /*Overload this callback function to add user-defined handling program upon Reception Completion */
-__weak void IT_CallBack_UsartRC(USART* instance);
+__weak void usartRC_IT_CallBack(USART* instance);
 /*=========================================================================*/
 
 
