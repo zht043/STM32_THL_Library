@@ -1,6 +1,4 @@
 #include "THL_GPIO.h"
-#include "THL_Portability.h"
-#include "THL_Utility.h"
 #include "THL_SysTick.h"
 
 
@@ -18,7 +16,7 @@ void gpioWrite(GPIO* obj, uint8_t Bit) {
 	if(Bit == High) turnOn(obj);
 	else turnOff(obj);
 }
-uint8_t gpioRead(GPIO* obj) {
+Bool gpioRead(GPIO* obj) {
 	return HAL_GPIO_ReadPin(obj->GPIOx, obj->GPIO_Pin) == GPIO_PIN_SET?High:Low;
 }
 /*=============================================================================*/

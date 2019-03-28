@@ -1,0 +1,5 @@
+PMW3901.c:25:16:__PMW3901_ReadReg	16	static
+PMW3901.c:15:13:__PMW3901_WriteReg	16	static
+PMW3901.c:37:10:newPMW3901	0	static
+PMW3901.c:44:9:initPMW3901	8	static
+PMW3901.c:151:10:getMotion	16	static

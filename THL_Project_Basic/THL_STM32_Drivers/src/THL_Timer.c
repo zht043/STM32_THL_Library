@@ -7,16 +7,24 @@
 uint16_t numActiveTIMs = 0;
 TIM* ActiveTIMs[Max_Num_TIMs];
 
-//Each section below has its own instantiation
+//Each section below has its own instantiation method
 
 
-/*=======================Universal Functions================================*/
+/*Abbreviation Notes:
+ * ->ARR = Autoreload Register -- Period
+ * ->CCR = Compare & Capture Register
+ * ->CNT = Counter Value
+ */
+
+
+/*=======================Universal Function================================*/
 /**This section is aimed for timer that multitasks, if a timer
   *is solely focus on e.g. pwm generation, go to PWM Generation
   *in another section below
   */
 /**
  * Please use STM32CubeMx to config period and prescaler
+ * Period & prescaler setting are applied on all four channels
  */
 TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim) {
 	instance->htim = htim;
@@ -28,12 +36,45 @@ TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim) {
 	ActiveTIMs[numActiveTIMs++] = instance;
 	return instance;
 }
+
+void timSetARR(TIM* instance, uint32_t ARR_val) {
+	instance->ARR = ARR_val;
+	__HAL_TIM_SET_AUTORELOAD(instance->htim, instance->ARR);
+}
+
+void timSetCCR(TIM* instance, uint32_t channel, uint32_t CCR_val) {
+	instance->CCR = CCR_val;
+	__HAL_TIM_SET_COMPARE(instance->htim, channel, CCR_val);
+}
+
+uint32_t timGetCCR(TIM* instance, uint32_t channel) {
+	instance->CCR = __HAL_TIM_GET_COMPARE(instance->htim, channel);
+	return instance->CCR;
+}
+
+void timSetCNT(TIM* instance, uint32_t CNT_val) {
+	instance->CNT = CNT_val;
+	__HAL_TIM_SET_COUNTER(instance->htim, CNT_val);
+}
+
+uint32_t timGetCNT(TIM* instance) {
+	instance->CNT = __HAL_TIM_GET_COUNTER(instance->htim);
+	return instance->CNT;
+}
+
+void timSetPrescaler(TIM* instance, uint32_t prescaler_val) {
+	instance->TimerPrescaler = prescaler_val;
+	__HAL_TIM_SET_PRESCALER(instance->htim, instance->TimerPrescaler);
+}
 /*===========================================================================*/
 
 
+/*=======================Basic Counting & Interrupt==========================*/
 
-/*==============================PWM Generation===============================
- *======================(a.k.a) Output Compare===============================*/
+/*===========================================================================*/
+
+
+/*=============================PWM Input/Output==============================*/
 
 
 /** PWM Frequency Explaination
@@ -72,31 +113,13 @@ TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim) {
  *
  */
 
-/* Pseudo-Constructor for TIM instance specifically for PWM generation
- * Warning: This constructor can only be applied for timers in which all channels
- * are used for pwm generation, otherwise, make more customized configuration via newTIM() above
- * */
-TIM *newTIM_PWM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t max_count, uint32_t pwm_frequency) {
-	instance->htim = htim;
-	timSetPwmFrequency(instance, max_count, pwm_frequency);
-
-	//initialize
-	timSetPwmDutyCircle(instance, TIM_Channel_1, 0);
-	timSetPwmDutyCircle(instance, TIM_Channel_2, 0);
-	timSetPwmDutyCircle(instance, TIM_Channel_3, 0);
-	timSetPwmDutyCircle(instance, TIM_Channel_4, 0);
-
-	for(int i = 0; i < numActiveTIMs; i++)
-		if(ActiveTIMs[i]->htim == htim) {
-			ActiveTIMs[i] = instance;
-			return instance;
-		}
-	ActiveTIMs[numActiveTIMs++] = instance;
-	return instance;
+uint32_t initTIM_PWM(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
+	uint32_t rtn = timSetPwmFrequency(instance, max_count, pwm_frequency);
+	return rtn;
 }
 
-/*Set PWM frequency in runtime*/
-void timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
+/*Set PWM frequency at runtime*/
+uint32_t timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
 	uint32_t APBx_DivFactor;
 	volatile uint32_t CLK_DIV = __HAL_TIM_GET_CLOCKDIVISION(instance->htim);
 	if(CLK_DIV == TIM_CLOCKDIVISION_DIV1) APBx_DivFactor = 1;
@@ -107,12 +130,13 @@ void timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequenc
 	double TimerFrequency = max_count * pwm_frequency;
 	if(TimerFrequency > TimerMaxFrequency) {
 		throwException("THL_Timer.c: setPwmFrequency() | max_count * pwm_frequency must be less or equal than TimerMaxFrequency");
-		return;
+		return Failed;
 	}
-	instance->TimerPrescaler = TimerMaxFrequency / TimerFrequency;
-	instance->max_count = max_count;
-	__HAL_TIM_SET_AUTORELOAD(instance->htim, instance->max_count);
-	__HAL_TIM_SET_PRESCALER(instance->htim, instance->TimerPrescaler);
+
+	timSetPrescaler(instance, TimerMaxFrequency / TimerFrequency - 1);
+	timSetARR(instance, ((uint32_t)TimerMaxFrequency / (instance->TimerPrescaler + 1) ) / pwm_frequency);
+												//Minimize rounding error
+	return Succeeded;
 }
 
 /**
@@ -125,15 +149,21 @@ void timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequenc
  */
 void timPwmGenBegin(TIM* instance, uint32_t channel) {
 	HAL_TIM_PWM_Start(instance->htim, channel);
+	timSetPwmDutyCircle(instance, channel, 0);
+}
+
+void timPwmGenEnd(TIM* instance, uint32_t channel) {
+	HAL_TIM_PWM_Stop(instance->htim, channel);
 }
 
 void timSetPwmDutyCircle(TIM* instance, uint32_t channel, uint32_t dutyCircleCnt) {
-	__HAL_TIM_SET_COMPARE(instance->htim, channel, dutyCircleCnt);
+	timSetCCR(instance, channel, dutyCircleCnt);
 }
 
 //Pretty straightforward
 void timPwmWrite(TIM* instance, uint32_t channel, double dutyCirclePercent) {
-	timSetPwmDutyCircle(instance, channel, (uint32_t)(dutyCirclePercent * (double)instance->max_count));
+	dutyCirclePercent /= 100.00f;
+	timSetPwmDutyCircle(instance, channel, (uint32_t)(dutyCirclePercent * (double)instance->ARR));
 }
 /*=========================================================================*/
 

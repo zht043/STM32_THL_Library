@@ -31,7 +31,7 @@ typedef struct{
 	uint32_t RxTimeOut;
 	volatile uint8_t TxStatus;
 	volatile uint8_t RxStatus;
-	uint8_t AddressSize8Bit;
+	Bool AddressSize8Bit;
 }I2C;
 
 

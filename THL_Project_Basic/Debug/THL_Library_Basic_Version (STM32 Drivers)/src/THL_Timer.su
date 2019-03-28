@@ -1,0 +1,6 @@
+THL_Timer.c:21:6:newTIM	4	static
+THL_Timer.c:99:6:timSetPwmFrequency	40	static
+THL_Timer.c:126:6:timPwmGenBegin	8	static
+THL_Timer.c:130:6:timSetPwmDutyCircle	0	static
+THL_Timer.c:79:6:newTIM_PWM	16	static
+THL_Timer.c:135:6:timPwmWrite	24	static

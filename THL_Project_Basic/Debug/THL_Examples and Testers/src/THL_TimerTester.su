@@ -1,0 +1,3 @@
+THL_TimerTester.c:38:13:setup	8	static
+THL_TimerTester.c:48:13:testPWM	56	static
+THL_TimerTester.c:101:6:testTimer	8	static

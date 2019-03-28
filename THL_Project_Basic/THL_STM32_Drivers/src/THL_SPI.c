@@ -10,7 +10,7 @@
 
 #ifdef HAL_SPI_MODULE_ENABLED
 
-#define DummyByte 0x00
+#define DummyByte 0xFF
 #define Max_Num_SPIs 10
 uint16_t numActiveSPIs = 0;
 SPI* ActiveSPIs[Max_Num_SPIs];
@@ -36,7 +36,7 @@ SPI *newSPI(SPI* instance, SPI_HandleTypeDef *hspi) {
 
 
 
-/*==============================Chip Select================================*/
+/*==============================Chip Select/Shared bus================================*/
 /*For a SPI bus shared by multiple devices,
  *BeginDevice/EndDevice functions enable/disable
  *the particular chip_select pin wired to
@@ -46,6 +46,15 @@ void spiBeginDevice(GPIO* chip_select) {
 }
 void spiEndDevice(GPIO* chip_select) {
 	gpioWrite(chip_select, High); //Pull CS High to disable device for another device
+}
+
+/* Parameter such as SPI bus clock, polarity etc can be reconfigured via this method
+ * This is useful when multiple devices that requires different settings shares the
+ * same bus
+ * change settings in "instance->hspi->Init.xxxx" then pass the instance in*/
+Bool spiReconfigHardParam(SPI* instance) {
+	if (HAL_SPI_Init(instance->hspi) != HAL_OK) return False;
+	return True;
 }
 /*=========================================================================*/
 

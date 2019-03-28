@@ -7,6 +7,7 @@
 
 #ifndef THL_SPI_H_
 #define THL_SPI_H_
+
 #include "THL_Portability.h"
 #include "THL_Utility.h"
 #include "THL_GPIO.h"
@@ -31,6 +32,7 @@ typedef struct{
 
 /*==========================Set Read/Write Bit=============================*/
 //Master
+//Read + 0 at MSB, Write + 1 at MSB
 #define SPI_ReadMode(regAddr) regAddr & ~0x80   //~0x80 = 0111,1111 in binary
 #define SPI_WriteMode(regAddr) regAddr | 0x80   // 0x80 = 1000,0000 in binary
 
@@ -55,6 +57,8 @@ SPI *newSPI(SPI* instance, SPI_HandleTypeDef *hspi);
  *each of the devices. Only one device can be enabled at one times*/
 void spiBeginDevice(GPIO* chip_select);
 void spiEndDevice(GPIO* chip_select);
+
+Bool spiReconfigHardParam(SPI* instance);
 /*=========================================================================*/
 
 

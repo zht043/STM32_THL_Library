@@ -1,0 +1,12 @@
+THL_SPI.c:23:6:newSPI	4	static
+THL_SPI.c:44:6:spiBeginDevice	8	static
+THL_SPI.c:47:6:spiEndDevice	8	static
+THL_SPI.c:55:6:spiReconfigHardParam	8	static
+THL_SPI.c:64:7:spiReadWrite	32	static
+THL_SPI.c:87:10:spiReadWriteByte	24	static
+THL_SPI.c:115:7:spiReadWrite_IT	24	static
+THL_SPI.c:134:10:spiReadWriteByte_IT	16	static
+THL_SPI.c:153:7:spiReadWrite_DMA	24	static
+THL_SPI.c:173:10:spiReadWriteByte_DMA	16	static
+THL_SPI.c:205:13:spiTRC_IT_CallBack	0	static
+THL_SPI.c:192:6:HAL_SPI_TxRxCpltCallback	16	static
