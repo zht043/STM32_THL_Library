@@ -88,7 +88,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart);
 
 /*Overloading standard printf's fputc function, this method does not support Atollic Truestudio IDE
  * due to coinciding with its built-in debug tool*/
-int fputc(int c, FILE *f);
+//int fputc(int c, FILE *f);
 
 
 

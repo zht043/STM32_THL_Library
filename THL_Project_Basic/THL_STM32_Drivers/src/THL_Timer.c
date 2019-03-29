@@ -26,8 +26,9 @@ TIM* ActiveTIMs[Max_Num_TIMs];
  * Please use STM32CubeMx to config period and prescaler
  * Period & prescaler setting are applied on all four channels
  */
-TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim) {
+TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor) {
 	instance->htim = htim;
+	instance->APBx_Div_Factor = APBx_DivFactor;
 	for(int i = 0; i < numActiveTIMs; i++)
 		if(ActiveTIMs[i]->htim == htim) {
 			ActiveTIMs[i] = instance;
@@ -40,6 +41,11 @@ TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim) {
 void timSetARR(TIM* instance, uint32_t ARR_val) {
 	instance->ARR = ARR_val;
 	__HAL_TIM_SET_AUTORELOAD(instance->htim, instance->ARR);
+}
+
+uint32_t timGetARR(TIM* instance) {
+	instance->ARR = __HAL_TIM_GET_AUTORELOAD(instance->htim);
+	return instance->ARR;
 }
 
 void timSetCCR(TIM* instance, uint32_t channel, uint32_t CCR_val) {
@@ -66,11 +72,50 @@ void timSetPrescaler(TIM* instance, uint32_t prescaler_val) {
 	instance->TimerPrescaler = prescaler_val;
 	__HAL_TIM_SET_PRESCALER(instance->htim, instance->TimerPrescaler);
 }
+
+uint32_t timGetPrescaler(TIM* instance) {
+	return instance->TimerPrescaler;
+}
 /*===========================================================================*/
 
 
 /*=======================Basic Counting & Interrupt==========================*/
+uint32_t initTIM_BasicCounting(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency) {
+	timSetARR(instance, AutoReload_count);
+	uint32_t ActualFreq = timSetFrequency(instance, timer_frequency);
+	return ActualFreq;
+}
 
+
+uint32_t timSetFrequency(TIM* instance, uint32_t timer_frequency) {
+	uint32_t TimerMaxFrequency = HAL_RCC_GetHCLKFreq() / instance->APBx_Div_Factor;
+
+	if(timer_frequency > TimerMaxFrequency) {
+		throwException("THL_Timer.c: timSetFrequency() | timer_frequency must be less or equal than TimerMaxFrequency");
+		return Failed;
+	}
+	timSetPrescaler(instance, TimerMaxFrequency / timer_frequency - 1);
+
+	//Prescaled frequency is subject to rounding error
+	uint32_t ActualFrequency = TimerMaxFrequency / (timGetPrescaler(instance) + 1);
+	return ActualFrequency;
+}
+
+void timCountBegin(TIM* instance) {
+	HAL_TIM_Base_Start(instance->htim);
+}
+void timCountEnd(TIM* instance) {
+	HAL_TIM_Base_Stop(instance->htim);
+}
+void timCountBegin_IT(TIM* instance) {
+	HAL_TIM_Base_Start_IT(instance->htim);
+}
+void timCountEnd_IT(TIM* instance) {
+	HAL_TIM_Base_Stop_IT(instance->htim);
+}
+uint32_t timGetCount(TIM* instance) {
+	return timGetCNT(instance);
+}
 /*===========================================================================*/
 
 
@@ -120,13 +165,7 @@ uint32_t initTIM_PWM(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) 
 
 /*Set PWM frequency at runtime*/
 uint32_t timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
-	uint32_t APBx_DivFactor;
-	volatile uint32_t CLK_DIV = __HAL_TIM_GET_CLOCKDIVISION(instance->htim);
-	if(CLK_DIV == TIM_CLOCKDIVISION_DIV1) APBx_DivFactor = 1;
-	if(CLK_DIV == TIM_CLOCKDIVISION_DIV2) APBx_DivFactor = 2;
-	if(CLK_DIV == TIM_CLOCKDIVISION_DIV4) APBx_DivFactor = 4;
-
-	double TimerMaxFrequency = HAL_RCC_GetHCLKFreq() / APBx_DivFactor;
+	double TimerMaxFrequency = HAL_RCC_GetHCLKFreq() / instance->APBx_Div_Factor;
 	double TimerFrequency = max_count * pwm_frequency;
 	if(TimerFrequency > TimerMaxFrequency) {
 		throwException("THL_Timer.c: setPwmFrequency() | max_count * pwm_frequency must be less or equal than TimerMaxFrequency");

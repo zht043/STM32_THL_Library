@@ -12,6 +12,7 @@
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim5;
+extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim8;
 
 
@@ -21,6 +22,9 @@ TIM* timer1;
 
 TIM timer5Mem;
 TIM* timer5;
+
+TIM timer7Mem;
+TIM* timer7;
 
 TIM timer8Mem;
 TIM* timer8;
@@ -43,10 +47,19 @@ static void setup(void) {
 }
 
 
-
+static void testCount(void) {
+	timer7 = newTIM(&timer7Mem, &htim7, 2);
+	uint32_t ActualFreq = initTIM_BasicCounting(timer7, 10000, 100000);
+	printf_u("\r%d\r\n", ActualFreq);
+	timCountBegin(timer7);
+	uint32_t t0 = millis();
+	while(1) {
+		printf_u("\r millis = [%d]     timCNT = [%d]\r\n", millis() - t0, timGetCount(timer7) / 100);
+	}
+}
 
 static void testPWM(void) {
-	timer1 = newTIM(&timer1Mem, &htim1);
+	timer1 = newTIM(&timer1Mem, &htim1, 1); //TIM1 belongs to APB2, HCLK/APB2 = 1
 	initTIM_PWM(timer1, 10000, 10000); //max_cnt = 10,000; pwm_freq = 10k;
 	timPwmGenBegin(timer1, TIM_CH1);
 	timPwmGenBegin(timer1, TIM_CH2);
@@ -101,6 +114,10 @@ static void testPWM(void) {
 void testTimer(void) {
 	setup();
 	testPWM();
+	//UNUSED(testPWM);
+
+	testCount();
+	UNUSED(testCount);
 }
 
 
