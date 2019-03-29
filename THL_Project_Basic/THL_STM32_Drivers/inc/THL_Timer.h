@@ -47,9 +47,13 @@ uint32_t initTIM_BasicCounting(TIM* instance, uint32_t AutoReload_count, uint32_
 uint32_t timSetFrequency(TIM* instance, uint32_t timer_frequency);
 void timCountBegin(TIM* instance);
 void timCountEnd(TIM* instance);
+
 void timCountBegin_IT(TIM* instance);
 void timCountEnd_IT(TIM* instance);
 uint32_t timGetCount(TIM* instance);
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+__weak void timPE_IT_CallBack(TIM* instance);
+__weak void timSysT_IT_CallBack(TIM* instance);
 /*===========================================================================*/
 
 /*==============================PWM Generation===============================*/

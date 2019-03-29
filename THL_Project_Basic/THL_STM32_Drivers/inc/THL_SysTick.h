@@ -1,6 +1,13 @@
 #ifndef __THL_SYSTICK_H
 #define __THL_SYSTICK_H
 #include "THL_Portability.h"
+#include "THL_Timer.h"
+
+
+#ifdef SysTick_Reserved
+void initSysTime_TIM(TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor);
+void timSysT_IT_CallBack(TIM* instance);
+#endif
 
 uint32_t millis(void);
 uint32_t micros(void);

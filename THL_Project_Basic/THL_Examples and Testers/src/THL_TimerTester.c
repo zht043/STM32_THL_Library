@@ -36,12 +36,14 @@ GPIO ledMem;
 GPIO* led;
 GPIO buttonMem;
 GPIO* button;
-
+GPIO PB6Mem;
+GPIO* PB6;
 
 
 static void setup(void) {
 	system_console = newMainUSART(&huart2);
 	led = newGPIO(&ledMem, LD2_GPIO_Port, LD2_Pin);
+	PB6 = newGPIO(&PB6Mem, GPIOB, GPIO_PIN_6);
 	button = newGPIO(&buttonMem, B1_GPIO_Port, B1_Pin);
 	printf_u("\rTimer Testing\r\n");
 }
@@ -55,6 +57,22 @@ static void testCount(void) {
 	uint32_t t0 = millis();
 	while(1) {
 		printf_u("\r millis = [%d]     timCNT = [%d]\r\n", millis() - t0, timGetCount(timer7) / 100);
+	}
+}
+
+static void testTIMdelay(void) {
+	initSysTime_TIM(&htim7, 2);
+
+	while(1) {
+		gpioWrite(PB6, High);
+
+		//delay_us(10);
+		delay(10);
+
+		gpioWrite(PB6, Low);
+
+		//delay_us(10);
+		delay(10);
 	}
 }
 
@@ -113,11 +131,16 @@ static void testPWM(void) {
 
 void testTimer(void) {
 	setup();
-	testPWM();
-	//UNUSED(testPWM);
 
-	testCount();
+	//testPWM();
+	UNUSED(testPWM);
+
+	//testCount();
 	UNUSED(testCount);
+
+	testTIMdelay();
+	//UNUSED(testTIMdelay);
+
 }
 
 

@@ -107,6 +107,8 @@ void timCountBegin(TIM* instance) {
 void timCountEnd(TIM* instance) {
 	HAL_TIM_Base_Stop(instance->htim);
 }
+
+
 void timCountBegin_IT(TIM* instance) {
 	HAL_TIM_Base_Start_IT(instance->htim);
 }
@@ -115,6 +117,24 @@ void timCountEnd_IT(TIM* instance) {
 }
 uint32_t timGetCount(TIM* instance) {
 	return timGetCNT(instance);
+}
+
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	for(int i = 0; i < numActiveTIMs; i++) {
+		if(ActiveTIMs[i]->htim == htim) {
+			timPE_IT_CallBack(ActiveTIMs[i]);
+			timSysT_IT_CallBack(ActiveTIMs[i]);
+		}
+	}
+}
+
+__weak void timPE_IT_CallBack(TIM* instance) {
+	UNUSED(instance);
+}
+
+__weak void timSysT_IT_CallBack(TIM* instance) {
+	UNUSED(instance);
 }
 /*===========================================================================*/
 
