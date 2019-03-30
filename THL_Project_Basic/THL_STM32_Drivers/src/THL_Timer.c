@@ -82,8 +82,8 @@ uint32_t timGetPrescaler(TIM* instance) {
 /*=======================Basic Counting & Interrupt==========================*/
 uint32_t initTIM_BasicCounting(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency) {
 	timSetARR(instance, AutoReload_count);
-	uint32_t ActualFreq = timSetFrequency(instance, timer_frequency);
-	return ActualFreq;
+	timSetFrequency(instance, timer_frequency);
+	return instance->ActualFreq;
 }
 
 
@@ -97,8 +97,8 @@ uint32_t timSetFrequency(TIM* instance, uint32_t timer_frequency) {
 	timSetPrescaler(instance, TimerMaxFrequency / timer_frequency - 1);
 
 	//Prescaled frequency is subject to rounding error
-	uint32_t ActualFrequency = TimerMaxFrequency / (timGetPrescaler(instance) + 1);
-	return ActualFrequency;
+	instance->ActualFreq = TimerMaxFrequency / (timGetPrescaler(instance) + 1);
+	return instance->ActualFreq;
 }
 
 void timCountBegin(TIM* instance) {
@@ -139,7 +139,7 @@ __weak void timSysT_IT_CallBack(TIM* instance) {
 /*===========================================================================*/
 
 
-/*=============================PWM Input/Output==============================*/
+/*=============================PWM Generation================================*/
 
 
 /** PWM Frequency Explaination
@@ -191,6 +191,7 @@ uint32_t timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_freq
 		throwException("THL_Timer.c: setPwmFrequency() | max_count * pwm_frequency must be less or equal than TimerMaxFrequency");
 		return Failed;
 	}
+	instance->ActualFreq = TimerFrequency;
 
 	timSetPrescaler(instance, TimerMaxFrequency / TimerFrequency - 1);
 	timSetARR(instance, ((uint32_t)TimerMaxFrequency / (instance->TimerPrescaler + 1) ) / pwm_frequency);
@@ -226,98 +227,41 @@ void timPwmWrite(TIM* instance, uint32_t channel, double dutyCirclePercent) {
 }
 /*=========================================================================*/
 
-/*=============================Input Capture===============================*/
+/*================Input Capture(Interrupt Mode Only)=======================*/
+uint32_t initTIM_IC(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency) {
+	timSetARR(instance, AutoReload_count);
+	timSetFrequency(instance, timer_frequency);
+	return instance->ActualFreq;
+}
+
+void timIcBegin_IT(TIM* instance, uint32_t channel, uint32_t ICpolarity) {
+	__HAL_TIM_SET_CAPTUREPOLARITY(instance->htim, channel, ICpolarity);
+	HAL_TIM_IC_Start_IT(instance->htim, channel);
+}
+void timIcEnd_IT(TIM* instance, uint32_t channel) {
+	HAL_TIM_IC_Stop_IT(instance->htim, channel);
+}
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+	for(int i = 0; i < numActiveTIMs; i++) {
+		if(ActiveTIMs[i]->htim == htim) {
+			HAL_TIM_ActiveChannel active_channel = ActiveTIMs[i]->htim->Channel;
+			timIC_IT_CallBack(ActiveTIMs[i], active_channel);
+		}
+	}
+}
+
+__weak void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel) {
+	UNUSED(instance);
+}
+
 
 /*=========================================================================*/
 
 
 
 
-#ifdef fixthemlater
 
-
-void setPwmDutyCircle(TIM_HandleTypeDef* htimx, uint32_t channel, uint32_t dutyCircleCnt) {
-	//equivalent to htimx->instance->CCRx = dutyCircle
-	__HAL_TIM_SET_COMPARE(htimx, channel, dutyCircle);
-}
-
-void pwm(TIM_HandleTypeDef* htimx, uint32_t channel, double dutyCirclePercent) {
-	uint32_t cnt = (int)(dutyCirclePercent * (double)htimx->CounterPeriod);
-	setPwmDutyCircle(htimx, channel, cnt);
-}
-
-
-
-
-
-
-#ifdef xxx
-/***************************Input Capture*********************************/
-volatile int PulseWidth[NumTimers + 1][NumChannel + 1] = {0};
-volatile int PulseWidthtmp[NumTimers + 1][NumChannel + 1] = {0};
-
-/*******Input Capture Blocking Mode**********/
-volatile int *startInputCapture(TIM_HandleTypeDef* htimx, uint32_t channel) {
-	if(HAL_TIM_IC_Start(htimx, channel) != HAL_OK) Error_Handler2();
-	return PulseWidth[TIMx(htimx)];
-}
-int getTimCapturedVal(TIM_HandleTypeDef* htimx, uint32_t channel) {
-	return (int)HAL_TIM_ReadCapturedValue(htimx, channel);
-}
-void MeasurePulseWidth(TIM_HandleTypeDef* htimx, uint32_t channel, uint32_t MaxDelay_us) {
-	uint32_t t0 = micros(); 
-	int tmp_IC_CapVal = getTimCapturedVal(htimx, channel);
-	while(getTimCapturedVal(htimx, channel) == tmp_IC_CapVal) if(micros() - t0 > MaxDelay_us) return;
-	tmp_IC_CapVal = getTimCapturedVal(htimx, channel);
-	while(getTimCapturedVal(htimx, channel) == tmp_IC_CapVal) if(micros() - t0 > MaxDelay_us) return;
-  PulseWidth[TIMx(htimx)][chDec(channel)] = getTimCapturedVal(htimx, channel) - tmp_IC_CapVal;
-}
-/********************************************/
-
-
-
-/*******Input Capture Interrupt Mode*********/
-volatile uint8_t TIM_IC_IT_index[NumTimers + 1][NumChannel + 1] = {0};
-volatile uint8_t TIM_IC_IT_Channel[NumTimers + 1][NumChannel + 1] = {INACTIVE};
-volatile int *startInputCapture_IT(TIM_HandleTypeDef* htimx, uint32_t channel) {
-	if(HAL_TIM_IC_Start_IT(htimx, channel) != HAL_OK) Error_Handler2();
-	TIM_IC_IT_index[TIMx(htimx)][chDec(channel)] = 0;
-	TIM_IC_IT_Channel[TIMx(htimx)][chDec(channel)] = ACTIVE;
-	return PulseWidth[TIMx(htimx)];
-}
-void stopInputCapture_IT(TIM_HandleTypeDef* htimx, uint32_t channel) {
-	HAL_TIM_IC_Stop_IT(htimx, channel);
-	TIM_IC_IT_Channel[TIMx(htimx)][chDec(channel)] = INACTIVE;
-}
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htimx)
-{
-	for(int channel = 1; channel <= NumChannel; channel++) {
-		if(TIM_IC_IT_Channel[TIMx(htimx)][channel] == INACTIVE) continue;
-		if(TIM_IC_IT_index[TIMx(htimx)][channel] == 0) {
-			PulseWidthtmp[TIMx(htimx)][channel] = (int)HAL_TIM_ReadCapturedValue(htimx, chEnc(channel));
-			TIM_IC_IT_index[TIMx(htimx)][channel] = 1;
-		}
-		else if(TIM_IC_IT_index[TIMx(htimx)][channel] == 1) {
-			PulseWidth[TIMx(htimx)][channel] = 
-				(int)HAL_TIM_ReadCapturedValue(htimx, chEnc(channel)) - PulseWidthtmp[TIMx(htimx)][channel];
-			TIM_IC_IT_index[TIMx(htimx)][channel] = 0;
-		}			
-	}
-}
-/**********************************************/
-int getInputCapturePulseWidth(TIM_HandleTypeDef* htimx, uint32_t channel) {
-	return PulseWidth[TIMx(htimx)][chDec(channel)];
-}
-int TIM_ICval(TIM_HandleTypeDef* htimx, uint32_t channel) {
-	return PulseWidth[TIMx(htimx)][chDec(channel)];
-}
-uint8_t isChannelActive(TIM_HandleTypeDef* htimx, uint32_t channel) {
-	return TIM_IC_IT_Channel[TIMx(htimx)][channel];
-}
-/*************************************************************************/
-
-#endif
-#endif
 
 #endif
 

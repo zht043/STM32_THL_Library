@@ -9,6 +9,11 @@
 #define TIM_CH3 TIM_CHANNEL_3
 #define TIM_CH4 TIM_CHANNEL_4
 
+#define TIM_IC_RisingEdge  TIM_INPUTCHANNELPOLARITY_RISING
+#define TIM_IC_FallingEdge TIM_INPUTCHANNELPOLARITY_FALLING
+#define TIM_IC_BothEdge    TIM_INPUTCHANNELPOLARITY_BOTHEDGE
+
+
 #ifdef HAL_TIM_MODULE_ENABLED
 
 
@@ -21,6 +26,7 @@ typedef struct{
 	uint32_t CNT;
 
 	uint32_t APBx_Div_Factor;
+	uint32_t ActualFreq;
 }TIM;
 
 

@@ -138,8 +138,9 @@ void testTimer(void) {
 	//testCount();
 	UNUSED(testCount);
 
-	testTIMdelay();
-	//UNUSED(testTIMdelay);
+	//testTIMdelay();
+	UNUSED(testTIMdelay);
+
 
 }
 
