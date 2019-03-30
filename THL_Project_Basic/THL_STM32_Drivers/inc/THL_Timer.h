@@ -77,5 +77,16 @@ void timSetPwmDutyCycle(TIM* instance, uint32_t channel, uint32_t dutyCycleCnt);
 void timPwmWrite(TIM* instance, uint32_t channel, double dutyCyclePercent);
 /*===========================================================================*/
 
+
+/*================Input Capture(Interrupt Mode Only)========================*/
+uint32_t initTIM_IC(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency);
+void timSetIC_Polarity(TIM* instance, uint32_t channel, uint32_t ICpolarity);
+void timIcBegin_IT(TIM* instance, uint32_t channel);
+void timIcEnd_IT(TIM* instance, uint32_t channel);
+uint32_t timGetCapVal(TIM* instance, uint32_t channel);
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
+__weak void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel);
+/*===========================================================================*/
+
 #endif
 #endif

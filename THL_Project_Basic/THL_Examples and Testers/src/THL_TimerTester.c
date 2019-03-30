@@ -61,8 +61,9 @@ static void testCount(void) {
 }
 
 static void testTIMdelay(void) {
+#ifdef	SysTick_Reserved
 	initSysTime_TIM(&htim7, 2);
-
+#endif
 	while(1) {
 		gpioWrite(PB6, High);
 

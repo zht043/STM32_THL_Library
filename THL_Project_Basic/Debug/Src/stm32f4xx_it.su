@@ -13,8 +13,7 @@ stm32f4xx_it.c:254:6:DMA1_Stream4_IRQHandler	8	static
 stm32f4xx_it.c:268:6:I2C1_EV_IRQHandler	8	static
 stm32f4xx_it.c:282:6:I2C1_ER_IRQHandler	8	static
 stm32f4xx_it.c:296:6:SPI2_IRQHandler	8	static
-stm32f4xx_it.c:310:6:TIM8_UP_TIM13_IRQHandler	8	static
-stm32f4xx_it.c:324:6:TIM8_CC_IRQHandler	8	static
-stm32f4xx_it.c:338:6:DMA1_Stream7_IRQHandler	8	static
-stm32f4xx_it.c:352:6:TIM7_IRQHandler	8	static
-stm32f4xx_it.c:366:6:DMA2_Stream0_IRQHandler	8	static
+stm32f4xx_it.c:310:6:TIM8_CC_IRQHandler	8	static
+stm32f4xx_it.c:324:6:DMA1_Stream7_IRQHandler	8	static
+stm32f4xx_it.c:338:6:TIM7_IRQHandler	8	static
+stm32f4xx_it.c:352:6:DMA2_Stream0_IRQHandler	8	static

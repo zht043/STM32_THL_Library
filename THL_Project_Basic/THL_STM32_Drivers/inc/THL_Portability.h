@@ -4,7 +4,7 @@
 
 /*========================Global Setting Macros===========================*/
 #define USE_STM32F4
-//#define SysTick_Reserved  //SysTick reserved for RTOS
+#define SysTick_Reserved  //SysTick reserved for RTOS
 /*========================================================================*/
 
 

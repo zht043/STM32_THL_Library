@@ -1,3 +1,4 @@
 THL_TimerTester.c:43:13:setup	8	static
-THL_TimerTester.c:63:13:testTIMdelay	8	static
-THL_TimerTester.c:132:6:testTimer	8	static
+THL_TimerTester.c:136:6:testIC	8	static
+THL_TimerTester.c:157:6:timIC_IT_CallBack	16	static
+THL_TimerTester.c:182:6:testTimer	8	static
