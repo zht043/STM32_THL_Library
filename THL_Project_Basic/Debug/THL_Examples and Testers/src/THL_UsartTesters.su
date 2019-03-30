@@ -1,5 +1,0 @@
-THL_UsartTesters.c:16:6:IT_CallBack_UsartTC	8	static
-THL_UsartTesters.c:20:6:testPrints	32	static
-THL_UsartTesters.c:97:6:testScans	552	static
-THL_UsartTesters.c:224:6:testUsart	8	static
-THL_UsartTesters.c:244:6:Exception_Handler	8	static
