@@ -76,18 +76,26 @@ void timSetPrescaler(TIM* instance, uint32_t prescaler_val) {
 uint32_t timGetPrescaler(TIM* instance) {
 	return instance->TimerPrescaler;
 }
+
+uint8_t tim_channel_index(uint32_t channel) {
+	if(channel == TIM_CH1) return 1;
+	if(channel == TIM_CH2) return 2;
+	if(channel == TIM_CH3) return 3;
+	if(channel == TIM_CH4) return 4;
+	return 0;
+}
 /*===========================================================================*/
 
 
 /*=======================Basic Counting & Interrupt==========================*/
-uint32_t initTIM_BasicCounting(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency) {
+Bool initTIM_BasicCounting(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency) {
 	timSetARR(instance, AutoReload_count);
-	timSetFrequency(instance, timer_frequency);
-	return instance->ActualFreq;
+	Bool rtn = timSetFrequency(instance, timer_frequency);
+	return rtn;
 }
 
 
-uint32_t timSetFrequency(TIM* instance, uint32_t timer_frequency) {
+Bool timSetFrequency(TIM* instance, uint32_t timer_frequency) {
 	uint32_t TimerMaxFrequency = HAL_RCC_GetHCLKFreq() / instance->APBx_Div_Factor;
 
 	if(timer_frequency > TimerMaxFrequency) {
@@ -98,7 +106,7 @@ uint32_t timSetFrequency(TIM* instance, uint32_t timer_frequency) {
 
 	//Prescaled frequency is subject to rounding error
 	instance->ActualFreq = TimerMaxFrequency / (timGetPrescaler(instance) + 1);
-	return instance->ActualFreq;
+	return Succeeded;
 }
 
 void timCountBegin(TIM* instance) {
@@ -139,8 +147,10 @@ __weak void timSysT_IT_CallBack(TIM* instance) {
 /*===========================================================================*/
 
 
-/*=============================PWM Generation================================*/
 
+/*============================PWM Input/Output===============================*/
+
+//Output: PWM generation
 
 /** PWM Frequency Explaination
  *  - Timer frequency and PWM frequency are two distinct concepts!
@@ -178,13 +188,19 @@ __weak void timSysT_IT_CallBack(TIM* instance) {
  *
  */
 
-uint32_t initTIM_PWM(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
-	uint32_t rtn = timSetPwmFrequency(instance, max_count, pwm_frequency);
+/* max_count determines the resolution,
+ * e.g. for .1  precision, max_count is typically 1,000,
+ *      for .01 precision, max_count is typically 10,000
+ * pwm_frequency refers to the frequency of each PWM Cycle's period,
+ * which is the time period between two rising edge of a typical pwm pulse
+ */
+Bool initTIM_PWM_Out(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
+	Bool rtn = timSetPwmFrequency(instance, max_count, pwm_frequency);
 	return rtn;
 }
 
 /*Set PWM frequency at runtime*/
-uint32_t timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
+Bool timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
 	double TimerMaxFrequency = HAL_RCC_GetHCLKFreq() / instance->APBx_Div_Factor;
 	double TimerFrequency = max_count * pwm_frequency;
 	if(TimerFrequency > TimerMaxFrequency) {
@@ -222,20 +238,137 @@ void timSetPwmDutyCycle(TIM* instance, uint32_t channel, uint32_t dutyCycleCnt) 
 
 //Pretty straightforward
 void timPwmWrite(TIM* instance, uint32_t channel, double dutyCyclePercent) {
+	if(dutyCyclePercent > 100.00f) dutyCyclePercent = 100.00f;
 	dutyCyclePercent /= 100.00f;
 	timSetPwmDutyCycle(instance, channel, (uint32_t)(dutyCyclePercent * (double)instance->ARR));
 }
+
+
+// Input: Periodic input capture interpreted as PWM pulse
+
+/* PWM input: Typical use cases: PPM radio remote input, SR04 Ultrasonic sensor
+ * Timer's counter counts at [timer_freq = max_cnt * pwm_freq]
+ * Same as pwm_gen, max_count here is used to determine resolution.
+ * Generally it is recommended to set the resolution so that the timer_freq is less than 1,000,000 Hz = 1Mhz
+ *
+ * Unlike other methods, max_count here is not used to set Autoreload,
+ * To reduce the chances of counter overflow, ARR is set to be the largest 16-bit value 0xFFFF,
+ * even though this edge case has been taken care.
+ * It is required to have [# of Autoreload(ARR) count > # of counts within a pulse],
+ * ARR count is 0xFFFF, # of counts within a pulse = pulse_width / (1/timer_freq).
+ *
+ * Note: Capture interrupt MUST be enabled, use CubeMx to enable it
+ */
+Bool initTIM_PWM_In(TIM* instance, TIM_IC* IC_fields, uint32_t max_count, uint32_t pwm_frequency) {
+	uint32_t timer_frequency = max_count * pwm_frequency;
+	uint32_t TimerMaxFrequency = HAL_RCC_GetHCLKFreq() / instance->APBx_Div_Factor;
+	if(timer_frequency > TimerMaxFrequency) {
+		throwException("THL_Timer.c: timSetFrequency() | timer_frequency must be less or equal than TimerMaxFrequency");
+		return Failed;
+	}
+	initTIM_IC(instance, IC_fields, 0xFFFF, timer_frequency);
+
+	for(int i = 1; i < TIM_Num_Channels+1; i++) {
+		IC_fields->IC_FirstEdge[i] = 0;
+		IC_fields->PulseWidth[i] = 0;
+	}
+
+	instance->IC_fields->isUsedForPwmInput = True;
+	instance->IC_fields->pwm_input_max_count = max_count;
+
+	return Succeeded;
+}
+
+//pulse_polarity simply tells whether the pulse signal is High during the pulse or low during the pulse
+void timPwmIcBegin(TIM* instance, uint32_t channel, PulseLevel pulse_polarity) {
+	if(pulse_polarity == TIM_PulseOnHigh)
+		timSetIC_Polarity(instance, channel, TIM_IC_RisingEdge);
+	if(pulse_polarity == TIM_PulseOnLow)
+		timSetIC_Polarity(instance, channel, TIM_IC_FallingEdge);
+
+	instance->IC_fields->pulse_polarity = pulse_polarity;
+
+	timIcBegin_IT(instance, channel);
+}
+
+void timPwmIcEnd(TIM* instance, uint32_t channel) {
+	timIcEnd_IT(instance, channel);
+}
+
+
+int32_t timGetPulseWidth(TIM* instance, uint32_t channel) {
+	return instance->IC_fields->PulseWidth[tim_channel_index(channel)];
+}
+
+double timPwmRead(TIM* instance, uint32_t channel) {
+	return ((double)timGetPulseWidth(instance, channel) / (double)instance->IC_fields->pwm_input_max_count) * 100.00f;
+}
+
+static void timPWM_IN_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel) {
+	uint32_t channel;
+	if(instance->IC_fields->isUsedForPwmInput == True) {
+		if(active_channel == TIM_Active_CH1) channel = TIM_CH1;
+		if(active_channel == TIM_Active_CH2) channel = TIM_CH2;
+		if(active_channel == TIM_Active_CH3) channel = TIM_CH3;
+		if(active_channel == TIM_Active_CH4) channel = TIM_CH4;
+
+		if(instance->IC_fields->pulse_polarity == TIM_PulseOnHigh) {
+			if(instance->IC_fields->ICpolarity[tim_channel_index(channel)] == TIM_IC_RisingEdge) {
+				instance->IC_fields->IC_FirstEdge[tim_channel_index(channel)]
+												  = timGetCapVal(instance, channel);
+
+				timSetIC_Polarity(instance, channel, TIM_IC_FallingEdge);
+			}
+			else if(instance->IC_fields->ICpolarity[tim_channel_index(channel)] == TIM_IC_FallingEdge) {
+				instance->IC_fields->PulseWidth[tim_channel_index(channel)]
+												= timGetCapVal(instance, channel)
+												  - instance->IC_fields->IC_FirstEdge[tim_channel_index(channel)];
+				if(instance->IC_fields->PulseWidth[tim_channel_index(channel)] < 0) {
+					instance->IC_fields->PulseWidth[tim_channel_index(channel)]
+													+= instance->ARR+1;
+				}
+
+				timSetIC_Polarity(instance, channel, TIM_IC_RisingEdge);
+			}
+		}
+		else {
+			if(instance->IC_fields->ICpolarity[tim_channel_index(channel)] == TIM_IC_FallingEdge) {
+				instance->IC_fields->IC_FirstEdge[tim_channel_index(channel)]
+												  = timGetCapVal(instance, channel);
+
+				timSetIC_Polarity(instance, channel, TIM_IC_RisingEdge);
+			}
+			else if(instance->IC_fields->ICpolarity[tim_channel_index(channel)] == TIM_IC_RisingEdge) {
+				instance->IC_fields->PulseWidth[tim_channel_index(channel)]
+												= timGetCapVal(instance, channel)
+												  - instance->IC_fields->IC_FirstEdge[tim_channel_index(channel)];
+				if(instance->IC_fields->PulseWidth[tim_channel_index(channel)] < 0) {
+					instance->IC_fields->PulseWidth[tim_channel_index(channel)]
+													+= instance->ARR+1;
+				}
+
+				timSetIC_Polarity(instance, channel, TIM_IC_FallingEdge);
+			}
+		}
+	}
+}
+
+
 /*=========================================================================*/
 
+
+
 /*================Input Capture(Interrupt Mode Only)=======================*/
-uint32_t initTIM_IC(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency) {
+uint32_t initTIM_IC(TIM* instance, TIM_IC* IC_fields, uint32_t AutoReload_count, uint32_t timer_frequency) {
 	timSetARR(instance, AutoReload_count);
 	timSetFrequency(instance, timer_frequency);
+	instance->IC_fields = IC_fields;
+	instance->IC_fields->isUsedForPwmInput = False;
 	return instance->ActualFreq;
 }
 
 void timSetIC_Polarity(TIM* instance, uint32_t channel, uint32_t ICpolarity) {
-	instance->ICpolarity = ICpolarity;
+	instance->IC_fields->ICpolarity[tim_channel_index(channel)] = ICpolarity;
 	__HAL_TIM_SET_CAPTUREPOLARITY(instance->htim, channel, ICpolarity);
 }
 void timIcBegin_IT(TIM* instance, uint32_t channel) {
@@ -254,8 +387,13 @@ uint32_t timGetCapVal(TIM* instance, uint32_t channel) {
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	for(int i = 0; i < numActiveTIMs; i++) {
 		if(ActiveTIMs[i]->htim == htim) {
-			HAL_TIM_ActiveChannel active_channel = ActiveTIMs[i]->htim->Channel;
-			timIC_IT_CallBack(ActiveTIMs[i], active_channel);
+			HAL_TIM_ActiveChannel active_channel = htim->Channel;
+			if(ActiveTIMs[i]->IC_fields->isUsedForPwmInput == True) {
+				timPWM_IN_IT_CallBack(ActiveTIMs[i], active_channel);
+			}
+			else {
+				timIC_IT_CallBack(ActiveTIMs[i], active_channel);
+			}
 		}
 	}
 }
@@ -264,8 +402,6 @@ __weak void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channe
 	UNUSED(instance);
 	UNUSED(active_channel);
 }
-
-
 /*=========================================================================*/
 
 

@@ -160,6 +160,7 @@ NVIC.SVCall_IRQn=true\:0\:0\:false\:false\:true\:false
 NVIC.SysTick_IRQn=true\:0\:0\:true\:false\:true\:true
 NVIC.TIM7_IRQn=true\:0\:0\:false\:false\:true\:true
 NVIC.TIM8_CC_IRQn=true\:0\:0\:false\:false\:true\:true
+NVIC.TIM8_UP_TIM13_IRQn=true\:0\:0\:false\:false\:true\:true
 NVIC.UsageFault_IRQn=true\:0\:0\:false\:false\:true\:true
 PA0-WKUP.Signal=S_TIM5_CH1
 PA1.Signal=S_TIM5_CH2

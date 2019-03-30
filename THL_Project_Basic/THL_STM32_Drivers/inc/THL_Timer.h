@@ -4,6 +4,10 @@
 #include "THL_Portability.h"
 
 
+
+#ifdef HAL_TIM_MODULE_ENABLED
+
+
 #define TIM_CH1 TIM_CHANNEL_1
 #define TIM_CH2 TIM_CHANNEL_2
 #define TIM_CH3 TIM_CHANNEL_3
@@ -18,22 +22,39 @@
 #define TIM_IC_FallingEdge TIM_INPUTCHANNELPOLARITY_FALLING
 #define TIM_IC_BothEdge    TIM_INPUTCHANNELPOLARITY_BOTHEDGE
 
+typedef enum {
+  TIM_PulseOnHigh = 1,
+  TIM_PulseOnLow  = 0
+}PulseLevel;
 
-#ifdef HAL_TIM_MODULE_ENABLED
 
+#define TIM_Num_Channels 4
+
+
+
+//Aux-struct for saving RAM space in case input capture is not used
+typedef struct{
+	volatile uint32_t ICpolarity[TIM_Num_Channels + 1];
+	volatile int32_t IC_FirstEdge[TIM_Num_Channels + 1];
+	volatile int32_t PulseWidth[TIM_Num_Channels + 1];
+	volatile uint8_t isUsedForPwmInput;
+	volatile PulseLevel pulse_polarity;
+	uint32_t pwm_input_max_count;
+
+}TIM_IC;
 
 typedef struct{
 	TIM_HandleTypeDef *htim;
-	uint32_t TimerPrescaler;
-	uint32_t ARR; //ARR: (Counter) Auto Reload Register value, a.k.a timer period
+	volatile uint32_t TimerPrescaler;
+	volatile uint32_t ARR; //ARR: (Counter) Auto Reload Register value, a.k.a timer period
 				  //ARR = max_count = *htim->init->Period
-	uint32_t CCR; //Capture/Compare (context dependent)
-	uint32_t CNT;
+	volatile uint32_t CCR; //Capture/Compare (context dependent)
+	volatile uint32_t CNT;
 
 	uint32_t APBx_Div_Factor;
 	uint32_t ActualFreq;
 
-	uint32_t ICpolarity;
+	volatile TIM_IC* IC_fields;
 }TIM;
 
 
@@ -48,6 +69,8 @@ void timSetCNT(TIM* instance, uint32_t CNT_val);
 uint32_t timGetCNT(TIM* instance);
 void timSetPrescaler(TIM* instance, uint32_t prescaler_val);
 uint32_t timGetPrescaler(TIM* instance);
+
+uint8_t tim_channel_index(uint32_t channel);
 /*===========================================================================*/
 
 /*=======================Basic Counting & Interrupt==========================*/
@@ -55,9 +78,9 @@ uint32_t timGetPrescaler(TIM* instance);
 /*Warning!: For 16bit timers, AutoRelaod_count must be less than 2^16
  * & timer frequency must be greater than a certain
  * threshold such that make prescaler value less than 2^16 (refer to source code)*/
-uint32_t initTIM_BasicCounting(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency);
+Bool initTIM_BasicCounting(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency);
 
-uint32_t timSetFrequency(TIM* instance, uint32_t timer_frequency);
+Bool timSetFrequency(TIM* instance, uint32_t timer_frequency);
 void timCountBegin(TIM* instance);
 void timCountEnd(TIM* instance);
 
@@ -69,17 +92,26 @@ __weak void timPE_IT_CallBack(TIM* instance);
 __weak void timSysT_IT_CallBack(TIM* instance);
 /*===========================================================================*/
 
-/*==============================PWM Generation===============================*/
-uint32_t initTIM_PWM(TIM* instance, uint32_t max_count, uint32_t pwm_frequency);
-uint32_t timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency);
+/*=============================PWM Input/Output==============================*/
+
+//PWM Generation
+Bool initTIM_PWM_Out(TIM* instance, uint32_t max_count, uint32_t pwm_frequency);
+Bool timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency);
 void timPwmGenBegin(TIM* instance, uint32_t channel);
 void timSetPwmDutyCycle(TIM* instance, uint32_t channel, uint32_t dutyCycleCnt);
 void timPwmWrite(TIM* instance, uint32_t channel, double dutyCyclePercent);
+
+//PWM Capture (Essentially Input Capture interpreted as PWM signal)
+Bool initTIM_PWM_In(TIM* instance, TIM_IC* IC_fields, uint32_t max_count, uint32_t pwm_frequency);
+void timPwmIcBegin(TIM* instance, uint32_t channel, PulseLevel pulse_polarity);
+void timPwmIcEnd(TIM* instance, uint32_t channel);
+int32_t timGetPulseWidth(TIM* instance, uint32_t channel);
+double timPwmRead(TIM* instance, uint32_t channel);
 /*===========================================================================*/
 
 
 /*================Input Capture(Interrupt Mode Only)========================*/
-uint32_t initTIM_IC(TIM* instance, uint32_t AutoReload_count, uint32_t timer_frequency);
+uint32_t initTIM_IC(TIM* instance, TIM_IC* IC_fields, uint32_t AutoReload_count, uint32_t timer_frequency);
 void timSetIC_Polarity(TIM* instance, uint32_t channel, uint32_t ICpolarity);
 void timIcBegin_IT(TIM* instance, uint32_t channel);
 void timIcEnd_IT(TIM* instance, uint32_t channel);

@@ -625,6 +625,8 @@ void HAL_TIM_IC_MspInit(TIM_HandleTypeDef* htim_ic)
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /* TIM8 interrupt Init */
+    HAL_NVIC_SetPriority(TIM8_UP_TIM13_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM8_UP_TIM13_IRQn);
     HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
   /* USER CODE BEGIN TIM8_MspInit 1 */
@@ -771,6 +773,7 @@ void HAL_TIM_IC_MspDeInit(TIM_HandleTypeDef* htim_ic)
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_7|GPIO_PIN_8);
 
     /* TIM8 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(TIM8_UP_TIM13_IRQn);
     HAL_NVIC_DisableIRQ(TIM8_CC_IRQn);
   /* USER CODE BEGIN TIM8_MspDeInit 1 */
 
