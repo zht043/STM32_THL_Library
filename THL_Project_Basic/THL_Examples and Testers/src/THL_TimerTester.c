@@ -129,55 +129,6 @@ static void testPWM(void) {
 	}
 }
 
-volatile uint32_t ICval[2] = {0};
-volatile uint32_t PulseWidth[2] = {0};
-
-void testIC(void) {
-	timer1 = newTIM(&timer1Mem, &htim1, 1); //TIM1 belongs to APB2, HCLK/APB2 = 1
-	initTIM_PWM(timer1, 100, 10000); //max_cnt = 10,000; pwm_freq = 10k;
-	timPwmGenBegin(timer1, TIM_CH1);
-	timPwmGenBegin(timer1, TIM_CH2);
-
-	timPwmWrite(timer1, TIM_CH1, 30.00);
-	timPwmWrite(timer1, TIM_CH2, 30.00);
-
-	timer8 = newTIM(&timer8Mem, &htim8, 1); //TIM8 belongs to APB2, HCLK/APB2 = 1
-	initTIM_IC(timer8, 0xFFFF, 10000);
-	timSetIC_Polarity(timer8, TIM_CH2, TIM_IC_RisingEdge);
-	timSetIC_Polarity(timer8, TIM_CH3, TIM_IC_RisingEdge);
-	timIcBegin_IT(timer8, TIM_CH2);
-	timIcBegin_IT(timer8, TIM_CH3);
-
-	while(1) {
-		printf_u("\rPulse 1 = [%d]   Pulse 2 = [%d]\r\n", PulseWidth[0], PulseWidth[1]);
-	}
-}
-
-void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel) {
-	if(instance == timer8) {
-		if(active_channel == TIM_Active_CH2) {
-			if(instance->ICpolarity == TIM_IC_RisingEdge) {
-				timSetIC_Polarity(timer8, TIM_CH2, TIM_IC_FallingEdge);
-				ICval[0] = timGetCapVal(timer8, TIM_CH2);
-			}
-			if(instance->ICpolarity == TIM_IC_FallingEdge) {
-				timSetIC_Polarity(timer8, TIM_CH2, TIM_IC_RisingEdge);
-				PulseWidth[0] = timGetCapVal(timer8, TIM_CH2) - ICval[0];
-			}
-		}
-		if(active_channel == TIM_Active_CH3) {
-			if(instance->ICpolarity == TIM_IC_RisingEdge) {
-				timSetIC_Polarity(timer8, TIM_CH3, TIM_IC_FallingEdge);
-				ICval[1] = timGetCapVal(timer8, TIM_CH3);
-			}
-			if(instance->ICpolarity == TIM_IC_FallingEdge) {
-				timSetIC_Polarity(timer8, TIM_CH3, TIM_IC_RisingEdge);
-				PulseWidth[1] = timGetCapVal(timer8, TIM_CH3) - ICval[1];
-			}
-		}
-	}
-}
-
 void testTimer(void) {
 	setup();
 
@@ -190,8 +141,7 @@ void testTimer(void) {
 	//testTIMdelay();
 	UNUSED(testTIMdelay);
 
-	testIC();
-	//UNUSED(testIC);
+
 }
 
 

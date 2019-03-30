@@ -9,11 +9,6 @@
 #define TIM_CH3 TIM_CHANNEL_3
 #define TIM_CH4 TIM_CHANNEL_4
 
-#define TIM_Active_CH1 HAL_TIM_ACTIVE_CHANNEL_1
-#define TIM_Active_CH2 HAL_TIM_ACTIVE_CHANNEL_2
-#define TIM_Active_CH3 HAL_TIM_ACTIVE_CHANNEL_3
-#define TIM_Active_CH4 HAL_TIM_ACTIVE_CHANNEL_4
-
 #define TIM_IC_RisingEdge  TIM_INPUTCHANNELPOLARITY_RISING
 #define TIM_IC_FallingEdge TIM_INPUTCHANNELPOLARITY_FALLING
 #define TIM_IC_BothEdge    TIM_INPUTCHANNELPOLARITY_BOTHEDGE
@@ -32,8 +27,6 @@ typedef struct{
 
 	uint32_t APBx_Div_Factor;
 	uint32_t ActualFreq;
-
-	uint32_t ICpolarity;
 }TIM;
 
 
@@ -73,8 +66,8 @@ __weak void timSysT_IT_CallBack(TIM* instance);
 uint32_t initTIM_PWM(TIM* instance, uint32_t max_count, uint32_t pwm_frequency);
 uint32_t timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency);
 void timPwmGenBegin(TIM* instance, uint32_t channel);
-void timSetPwmDutyCycle(TIM* instance, uint32_t channel, uint32_t dutyCycleCnt);
-void timPwmWrite(TIM* instance, uint32_t channel, double dutyCyclePercent);
+void timSetPwmDutyCircle(TIM* instance, uint32_t channel, uint32_t dutyCircleCnt);
+void timPwmWrite(TIM* instance, uint32_t channel, double dutyCirclePercent);
 /*===========================================================================*/
 
 #endif
