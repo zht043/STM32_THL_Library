@@ -11,10 +11,10 @@ TIM* sys_timer;
 
 volatile uint32_t millis_tick = 0;
 
-void initSysTime_TIM(TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor) {
+void initSysTime_TIM(TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor, TIM_Resolution xBitTIM) {
 	SysTime_T0 = 0;
 	millis_tick = 0;
-	sys_timer = newTIM(&sys_timer_mem, htim, APBx_DivFactor);
+	sys_timer = newTIM(&sys_timer_mem, htim, APBx_DivFactor, xBitTIM);
 	initTIM_BasicCounting(sys_timer, 1000, 1000000); // AutoReload at every 1000 count, counting at 1000,000Hz = 1Mhz
 	timCountBegin_IT(sys_timer);
 }

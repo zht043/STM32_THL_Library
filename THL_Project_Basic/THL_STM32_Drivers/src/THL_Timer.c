@@ -7,6 +7,7 @@
 uint16_t numActiveTIMs = 0;
 TIM* ActiveTIMs[Max_Num_TIMs];
 
+
 //Each section below has its own instantiation method
 
 
@@ -15,6 +16,10 @@ TIM* ActiveTIMs[Max_Num_TIMs];
  * ->CCR = Compare & Capture Register
  * ->CNT = Counter Value
  */
+
+/*private function declaration*/
+static void timEnc_OverFlow_IT_CallBack(TIM* instance);
+static void timPWM_IN_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel);
 
 
 /*=======================Universal Function================================*/
@@ -26,9 +31,12 @@ TIM* ActiveTIMs[Max_Num_TIMs];
  * Please use STM32CubeMx to config period and prescaler
  * Period & prescaler setting are applied on all four channels
  */
-TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor) {
+TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor, TIM_Resolution xBitTIM) {
 	instance->htim = htim;
 	instance->APBx_Div_Factor = APBx_DivFactor;
+	instance->xBitTIM = xBitTIM;
+	instance->isEncMode = False;
+
 	for(int i = 0; i < numActiveTIMs; i++)
 		if(ActiveTIMs[i]->htim == htim) {
 			ActiveTIMs[i] = instance;
@@ -39,6 +47,16 @@ TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor) {
 }
 
 void timSetARR(TIM* instance, uint32_t ARR_val) {
+	if(instance->xBitTIM == TIM_16bit) {
+		if(ARR_val > 0xFFFF)
+			throwException("THL_Timer.c: timSetARR() | AutoReload must < 0xFFFF for a 16 bit timer");
+	}
+	else if(instance->xBitTIM == TIM_32bit) {
+		if(ARR_val > 0xFFFFFFFF)
+			throwException("THL_Timer.c: timSetARR() | AutoReload must < 0xFFFFFFFF for a 32 bit timer");
+	}
+
+
 	instance->ARR = ARR_val;
 	__HAL_TIM_SET_AUTORELOAD(instance->htim, instance->ARR);
 }
@@ -133,6 +151,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		if(ActiveTIMs[i]->htim == htim) {
 			timPE_IT_CallBack(ActiveTIMs[i]);
 			timSysT_IT_CallBack(ActiveTIMs[i]);
+			timEnc_OverFlow_IT_CallBack(ActiveTIMs[i]);
 		}
 	}
 }
@@ -266,7 +285,8 @@ Bool initTIM_PWM_In(TIM* instance, TIM_IC* IC_fields, uint32_t max_count, uint32
 		throwException("THL_Timer.c: timSetFrequency() | timer_frequency must be less or equal than TimerMaxFrequency");
 		return Failed;
 	}
-	initTIM_IC(instance, IC_fields, 0xFFFF, timer_frequency);
+
+	initTIM_IC(instance, IC_fields, timer_frequency);
 
 	for(int i = 1; i < TIM_Num_Channels+1; i++) {
 		IC_fields->IC_FirstEdge[i] = 0;
@@ -359,8 +379,9 @@ static void timPWM_IN_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_ch
 
 
 /*================Input Capture(Interrupt Mode Only)=======================*/
-uint32_t initTIM_IC(TIM* instance, TIM_IC* IC_fields, uint32_t AutoReload_count, uint32_t timer_frequency) {
-	timSetARR(instance, AutoReload_count);
+uint32_t initTIM_IC(TIM* instance, TIM_IC* IC_fields, uint32_t timer_frequency) {
+	if(instance->xBitTIM == TIM_32bit) timSetARR(instance, 0xFFFFFFFF);
+	else if(instance->xBitTIM == TIM_16bit) timSetARR(instance, 0xFFFF);
 	timSetFrequency(instance, timer_frequency);
 	instance->IC_fields = IC_fields;
 	instance->IC_fields->isUsedForPwmInput = False;
@@ -404,6 +425,61 @@ __weak void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channe
 }
 /*=========================================================================*/
 
+/*======================(Quadrature) Encoder Mode==========================*/
+//Reminder: Enable Encoder Mode in CubeMx
+
+void initTIM_Enc(TIM* instance) {
+	if(instance->xBitTIM == TIM_16bit) timSetARR(instance, 0xFFFF);
+	else if(instance->xBitTIM == TIM_32bit) timSetARR(instance, 0xFFFFFFFF);
+	instance->ENC_CNT_0 = 0;
+	instance->ENC_CNT   = 0;
+	instance->ENC_OverFlow = 0;
+}
+
+void timEncBegin(TIM* instance) {
+	HAL_TIM_Encoder_Start(instance->htim, TIM_CHANNEL_ALL);
+	timResetEnc(instance);
+}
+
+//Enable interrupt to handle counter overflow, usually applied on 16bit timers
+void timEncBegin_IT(TIM* instance) {
+	HAL_TIM_Encoder_Start_IT(instance->htim, TIM_CHANNEL_ALL);
+	timResetEnc(instance);
+}
+
+void timEncEnd(TIM* instance) {
+	HAL_TIM_Encoder_Stop(instance->htim, TIM_CHANNEL_ALL);
+}
+void timEncEnd_IT(TIM* instance) {
+	HAL_TIM_Encoder_Stop_IT(instance->htim, TIM_CHANNEL_ALL);
+}
+
+void timResetEnc(TIM* instance) {
+	timSetCNT(instance, 0);
+	instance->ENC_CNT_0 = __HAL_TIM_GET_COUNTER(instance->htim);
+}
+
+int32_t timGetEncCNT(TIM* instance) {
+	instance->ENC_CNT = __HAL_TIM_GET_COUNTER(instance->htim) - instance->ENC_CNT_0 + instance->ENC_OverFlow;
+	return instance->ENC_CNT;
+}
+
+
+
+static void timEnc_OverFlow_IT_CallBack(TIM* instance) {
+	if(instance->isEncMode == True) {
+		if(instance->xBitTIM == TIM_32bit) {
+			if(instance->ENC_CNT < 0) instance->ENC_OverFlow--;
+			else instance->ENC_OverFlow++;
+		}
+		else if(instance->xBitTIM == TIM_16bit) {
+			if(instance->ENC_CNT < 0) instance->ENC_OverFlow += 0xFFFF + 1;
+			else instance->ENC_OverFlow += 0xFFFF + 1;
+		}
+
+	}
+}
+/*=========================================================================*/
 
 
 

@@ -51,7 +51,7 @@ static void setup(void) {
 
 
 static void testCount(void) {
-	timer7 = newTIM(&timer7Mem, &htim7, 2);
+	timer7 = newTIM(&timer7Mem, &htim7, 2, TIM_16bit);
 	initTIM_BasicCounting(timer7, 10000, 100000);
 	printf_u("\r%d\r\n", timer7->ActualFreq);
 	timCountBegin(timer7);
@@ -63,7 +63,7 @@ static void testCount(void) {
 
 static void testTIMdelay(void) {
 #ifdef	SysTick_Reserved
-	initSysTime_TIM(&htim7, 2);
+	initSysTime_TIM(&htim7, 2, TIM_16bit);
 #endif
 	while(1) {
 		gpioWrite(PB6, High);
@@ -79,7 +79,7 @@ static void testTIMdelay(void) {
 }
 
 static void testPWM(void) {
-	timer1 = newTIM(&timer1Mem, &htim1, 1); //TIM1 belongs to APB2, HCLK/APB2 = 1
+	timer1 = newTIM(&timer1Mem, &htim1, 1, TIM_16bit); //TIM1 belongs to APB2, HCLK/APB2 = 1
 	initTIM_PWM_Out(timer1, 10000, 10000); //max_cnt = 10,000; pwm_freq = 10k;
 	timPwmGenBegin(timer1, TIM_CH1);
 	timPwmGenBegin(timer1, TIM_CH2);
@@ -135,7 +135,7 @@ volatile int32_t ICval[2] = {0};
 volatile int32_t PulseWidth[2] = {0};
 
 static void testIC(void) {
-	timer1 = newTIM(&timer1Mem, &htim1, 1); //TIM1 belongs to APB2, HCLK/APB2 = 1
+	timer1 = newTIM(&timer1Mem, &htim1, 1, TIM_16bit); //TIM1 belongs to APB2, HCLK/APB2 = 1
 	initTIM_PWM_Out(timer1, 100, 1000); //max_cnt = 10,000; pwm_freq = 10k;
 	timPwmGenBegin(timer1, TIM_CH1);
 	timPwmGenBegin(timer1, TIM_CH2);
@@ -146,8 +146,8 @@ static void testIC(void) {
 	//Wire TIM1 CH1 pin to TIM8 CH2 pin,
 	//     TIM1 CH2 pin to TIM8 CH3 pin for experimenting
 
-	timer8 = newTIM(&timer8Mem, &htim8, 1); //TIM8 belongs to APB2, HCLK/APB2 = 1
-	initTIM_IC(timer8, &timer8_IC_fieldsMem, 0xFFFF, 100000);
+	timer8 = newTIM(&timer8Mem, &htim8, 1, TIM_16bit); //TIM8 belongs to APB2, HCLK/APB2 = 1
+	initTIM_IC(timer8, &timer8_IC_fieldsMem, 100000);
 	timSetIC_Polarity(timer8, TIM_CH2, TIM_IC_RisingEdge);
 	timSetIC_Polarity(timer8, TIM_CH3, TIM_IC_RisingEdge);
 	timIcBegin_IT(timer8, TIM_CH2);
@@ -195,7 +195,7 @@ void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel) {
 
 
 static void testPWM_Input(void) {
-	timer1 = newTIM(&timer1Mem, &htim1, 1); //TIM1 belongs to APB2, HCLK/APB2 = 1
+	timer1 = newTIM(&timer1Mem, &htim1, 1, TIM_16bit); //TIM1 belongs to APB2, HCLK/APB2 = 1
 	initTIM_PWM_Out(timer1, 100, 1000); //max_cnt = 10,000; pwm_freq = 10k;
 	timPwmGenBegin(timer1, TIM_CH1);
 	timPwmGenBegin(timer1, TIM_CH2);
@@ -206,7 +206,7 @@ static void testPWM_Input(void) {
 	//Wire TIM1 CH1 pin to TIM8 CH2 pin,
 	//     TIM1 CH2 pin to TIM8 CH3 pin for experimenting
 
-	timer8 = newTIM(&timer8Mem, &htim8, 1); //TIM8 belongs to APB2, HCLK/APB2 = 1
+	timer8 = newTIM(&timer8Mem, &htim8, 1, TIM_16bit); //TIM8 belongs to APB2, HCLK/APB2 = 1
 
 	initTIM_PWM_In(timer8, &timer8_IC_fieldsMem, 100, 1000); //match max_cnt & pwm_freq with timer1's
 															 //for proper interpretation upon capturing

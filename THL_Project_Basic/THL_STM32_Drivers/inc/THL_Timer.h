@@ -28,6 +28,13 @@ typedef enum {
 }PulseLevel;
 
 
+//Refer to datasheet
+typedef enum {
+  TIM_16bit = 0,
+  TIM_32bit = 1
+}TIM_Resolution;
+
+
 #define TIM_Num_Channels 4
 
 
@@ -37,7 +44,7 @@ typedef struct{
 	volatile uint32_t ICpolarity[TIM_Num_Channels + 1];
 	volatile int32_t IC_FirstEdge[TIM_Num_Channels + 1];
 	volatile int32_t PulseWidth[TIM_Num_Channels + 1];
-	volatile uint8_t isUsedForPwmInput;
+	volatile Bool isUsedForPwmInput;
 	volatile PulseLevel pulse_polarity;
 	uint32_t pwm_input_max_count;
 
@@ -53,14 +60,20 @@ typedef struct{
 
 	uint32_t APBx_Div_Factor;
 	uint32_t ActualFreq;
+	TIM_Resolution xBitTIM;
 
 	volatile TIM_IC* IC_fields;
+
+	volatile Bool isEncMode;
+	volatile int32_t ENC_CNT;
+	volatile int32_t ENC_CNT_0;
+	volatile int32_t ENC_OverFlow;
 }TIM;
 
 
 
 /*=======================Universal Functions=================================*/
-TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor);
+TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor, TIM_Resolution xBitTIM);
 void timSetARR(TIM* instance, uint32_t ARR_val);
 uint32_t timGetARR(TIM* instance);
 void timSetCCR(TIM* instance, uint32_t channel, uint32_t CCR_val);
@@ -111,7 +124,7 @@ double timPwmRead(TIM* instance, uint32_t channel);
 
 
 /*================Input Capture(Interrupt Mode Only)========================*/
-uint32_t initTIM_IC(TIM* instance, TIM_IC* IC_fields, uint32_t AutoReload_count, uint32_t timer_frequency);
+uint32_t initTIM_IC(TIM* instance, TIM_IC* IC_fields, uint32_t timer_frequency);
 void timSetIC_Polarity(TIM* instance, uint32_t channel, uint32_t ICpolarity);
 void timIcBegin_IT(TIM* instance, uint32_t channel);
 void timIcEnd_IT(TIM* instance, uint32_t channel);
@@ -119,6 +132,18 @@ uint32_t timGetCapVal(TIM* instance, uint32_t channel);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 __weak void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel);
 /*===========================================================================*/
+
+
+
+/*======================(Quadrature) Encoder Mode============================*/
+void initTIM_Enc(TIM* instance);
+void timEncBegin(TIM* instance);void timEncBegin_IT(TIM* instance);
+void timEncEnd(TIM* instance);
+void timEncEnd_IT(TIM* instance);
+void timResetEnc(TIM* instance);
+int32_t timGetEncCNT(TIM* instance);
+/*===========================================================================*/
+
 
 #endif
 #endif

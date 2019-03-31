@@ -5,7 +5,7 @@
 
 
 #ifdef SysTick_Reserved
-void initSysTime_TIM(TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor);
+void initSysTime_TIM(TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor, TIM_Resolution xBitTIM);
 void timSysT_IT_CallBack(TIM* instance);
 #endif
 
