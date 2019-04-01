@@ -3,7 +3,7 @@
 
 #ifdef HAL_TIM_MODULE_ENABLED
 
-#define Max_Num_TIMs 20
+#define Max_Num_TIMs 25
 uint16_t numActiveTIMs = 0;
 TIM* ActiveTIMs[Max_Num_TIMs];
 
@@ -18,8 +18,9 @@ TIM* ActiveTIMs[Max_Num_TIMs];
  */
 
 /*private function declaration*/
-static void timEnc_OverFlow_IT_CallBack(TIM* instance);
 static void timPWM_IN_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel);
+static void timEnc_OverFlow_IT_CallBack(TIM* instance);
+
 
 
 /*=======================Universal Function================================*/
@@ -36,7 +37,6 @@ TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor, TIM
 	instance->APBx_Div_Factor = APBx_DivFactor;
 	instance->xBitTIM = xBitTIM;
 	instance->isEncMode = False;
-
 	for(int i = 0; i < numActiveTIMs; i++)
 		if(ActiveTIMs[i]->htim == htim) {
 			ActiveTIMs[i] = instance;
@@ -151,7 +151,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		if(ActiveTIMs[i]->htim == htim) {
 			timPE_IT_CallBack(ActiveTIMs[i]);
 			timSysT_IT_CallBack(ActiveTIMs[i]);
-			timEnc_OverFlow_IT_CallBack(ActiveTIMs[i]);
 		}
 	}
 }
@@ -383,6 +382,7 @@ uint32_t initTIM_IC(TIM* instance, TIM_IC* IC_fields, uint32_t timer_frequency) 
 	if(instance->xBitTIM == TIM_32bit) timSetARR(instance, 0xFFFFFFFF);
 	else if(instance->xBitTIM == TIM_16bit) timSetARR(instance, 0xFFFF);
 	timSetFrequency(instance, timer_frequency);
+
 	instance->IC_fields = IC_fields;
 	instance->IC_fields->isUsedForPwmInput = False;
 	return instance->ActualFreq;
@@ -409,12 +409,9 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	for(int i = 0; i < numActiveTIMs; i++) {
 		if(ActiveTIMs[i]->htim == htim) {
 			HAL_TIM_ActiveChannel active_channel = htim->Channel;
-			if(ActiveTIMs[i]->IC_fields->isUsedForPwmInput == True) {
-				timPWM_IN_IT_CallBack(ActiveTIMs[i], active_channel);
-			}
-			else {
-				timIC_IT_CallBack(ActiveTIMs[i], active_channel);
-			}
+			timPWM_IN_IT_CallBack(ActiveTIMs[i], active_channel);
+			timEnc_OverFlow_IT_CallBack(ActiveTIMs[i]);
+			timIC_IT_CallBack(ActiveTIMs[i], active_channel);
 		}
 	}
 }
@@ -431,7 +428,7 @@ __weak void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channe
 void initTIM_Enc(TIM* instance) {
 	if(instance->xBitTIM == TIM_16bit) timSetARR(instance, 0xFFFF);
 	else if(instance->xBitTIM == TIM_32bit) timSetARR(instance, 0xFFFFFFFF);
-	instance->ENC_CNT_0 = 0;
+	instance->isEncMode = True;
 	instance->ENC_CNT   = 0;
 	instance->ENC_OverFlow = 0;
 }
@@ -456,27 +453,50 @@ void timEncEnd_IT(TIM* instance) {
 
 void timResetEnc(TIM* instance) {
 	timSetCNT(instance, 0);
-	instance->ENC_CNT_0 = __HAL_TIM_GET_COUNTER(instance->htim);
+	instance->ENC_CNT = 0;
+	instance->ENC_OverFlow = 0;
 }
 
 int32_t timGetEncCNT(TIM* instance) {
-	instance->ENC_CNT = __HAL_TIM_GET_COUNTER(instance->htim) - instance->ENC_CNT_0 + instance->ENC_OverFlow;
+	if(instance->xBitTIM == TIM_16bit) {
+		instance->ENC_CNT = (int16_t)__HAL_TIM_GET_COUNTER(instance->htim) + instance->ENC_OverFlow;
+	}
+	else {
+		instance->ENC_CNT = (int32_t)__HAL_TIM_GET_COUNTER(instance->htim);
+	}
 	return instance->ENC_CNT;
 }
 
+int32_t timGetOverFlowPart_32bit(TIM* instance) {
+	return instance->ENC_OverFlow;
+}
 
 
 static void timEnc_OverFlow_IT_CallBack(TIM* instance) {
 	if(instance->isEncMode == True) {
 		if(instance->xBitTIM == TIM_32bit) {
-			if(instance->ENC_CNT < 0) instance->ENC_OverFlow--;
-			else instance->ENC_OverFlow++;
+
+			if((int16_t)__HAL_TIM_GET_COUNTER(instance->htim) <= -1000000000) {  //1,000,000,000 using decimal base here for simplicity
+				instance->ENC_OverFlow--;
+				timSetCNT(instance, 0);
+			}
+			else if((int16_t)__HAL_TIM_GET_COUNTER(instance->htim) >= 1000000000) {
+				instance->ENC_OverFlow++;
+				timSetCNT(instance, 0);
+			}
 		}
 		else if(instance->xBitTIM == TIM_16bit) {
-			if(instance->ENC_CNT < 0) instance->ENC_OverFlow += 0xFFFF + 1;
-			else instance->ENC_OverFlow += 0xFFFF + 1;
-		}
 
+			// 32767 == 0x7FFF == 0xFFFF/2, setting it to be a bit less than 0x7FFF in case of failure of interrupt capture (very rare)
+			if((int16_t)__HAL_TIM_GET_COUNTER(instance->htim) <= -32760) {
+				instance->ENC_OverFlow -= 32760;
+				timSetCNT(instance, 0);
+			}
+			else if((int16_t)__HAL_TIM_GET_COUNTER(instance->htim) >= 32760) {
+				instance->ENC_OverFlow += 32760;
+				timSetCNT(instance, 0);
+			}
+		}
 	}
 }
 /*=========================================================================*/

@@ -38,10 +38,11 @@ void initSysTime_SysTick(void) {
 }
 
 uint32_t millis(void) {
-		return HAL_GetTick() - SysTime_T0;
+	return HAL_GetTick() - SysTime_T0;
 }
 uint32_t micros(void) {
-	  return millis()*1000 + ((SysTick->LOAD - SysTick->VAL) * 1000000) / HAL_RCC_GetHCLKFreq();
+	//the second 1000 here corresponds to the default 1ms interrupt for teh Systick timer
+	return HAL_GetTick()*1000 + 1000 - (SysTick->VAL)/(HAL_RCC_GetHCLKFreq() / 1000000);
 }
 #endif
 

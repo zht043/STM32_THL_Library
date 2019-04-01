@@ -1,4 +1,7 @@
-THL_TimerTester.c:44:13:setup	8	static
-THL_TimerTester.c:197:13:testPWM_Input	8	static
-THL_TimerTester.c:161:6:timIC_IT_CallBack	16	static
-THL_TimerTester.c:225:6:testTimer	8	static
+THL_TimerTester.c:53:13:setup	8	static
+THL_TimerTester.c:177:6:timIC_IT_CallBack	16	static
+THL_TimerTester.c:249:6:timPE_IT_CallBack	8	static
+THL_TimerTester.c:269:6:testEncoder16bit	8	static
+THL_TimerTester.c:290:6:testEncoder32bit	8	static
+THL_TimerTester.c:315:6:testTimer	8	static
+THL_TimerTester.c:340:6:Exception_Handler	8	static

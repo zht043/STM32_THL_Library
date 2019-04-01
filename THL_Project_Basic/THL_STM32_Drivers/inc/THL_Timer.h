@@ -66,7 +66,6 @@ typedef struct{
 
 	volatile Bool isEncMode;
 	volatile int32_t ENC_CNT;
-	volatile int32_t ENC_CNT_0;
 	volatile int32_t ENC_OverFlow;
 }TIM;
 
@@ -122,7 +121,6 @@ int32_t timGetPulseWidth(TIM* instance, uint32_t channel);
 double timPwmRead(TIM* instance, uint32_t channel);
 /*===========================================================================*/
 
-
 /*================Input Capture(Interrupt Mode Only)========================*/
 uint32_t initTIM_IC(TIM* instance, TIM_IC* IC_fields, uint32_t timer_frequency);
 void timSetIC_Polarity(TIM* instance, uint32_t channel, uint32_t ICpolarity);
@@ -133,15 +131,15 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 __weak void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel);
 /*===========================================================================*/
 
-
-
 /*======================(Quadrature) Encoder Mode============================*/
 void initTIM_Enc(TIM* instance);
-void timEncBegin(TIM* instance);void timEncBegin_IT(TIM* instance);
+void timEncBegin(TIM* instance);
+void timEncBegin_IT(TIM* instance);
 void timEncEnd(TIM* instance);
 void timEncEnd_IT(TIM* instance);
 void timResetEnc(TIM* instance);
 int32_t timGetEncCNT(TIM* instance);
+int32_t timGetOverFlowPart_32bit(TIM* instance);
 /*===========================================================================*/
 
 

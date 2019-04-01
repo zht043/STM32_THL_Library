@@ -11,14 +11,18 @@
 
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim8;
-
+extern TIM_HandleTypeDef htim10;
 
 
 TIM timer1Mem;
 TIM* timer1;
+
+TIM timer3Mem;
+TIM* timer3;
 
 TIM timer5Mem;
 TIM* timer5;
@@ -30,6 +34,8 @@ TIM timer8Mem;
 TIM* timer8;
 TIM_IC timer8_IC_fieldsMem;
 
+TIM timer10Mem;
+TIM* timer10;
 
 USART* system_console;
 
@@ -39,12 +45,17 @@ GPIO buttonMem;
 GPIO* button;
 GPIO PB6Mem;
 GPIO* PB6;
+GPIO PB7Mem;
+GPIO* PB7;
+
 
 
 static void setup(void) {
 	system_console = newMainUSART(&huart2);
 	led = newGPIO(&ledMem, LD2_GPIO_Port, LD2_Pin);
 	PB6 = newGPIO(&PB6Mem, GPIOB, GPIO_PIN_6);
+	PB7 = newGPIO(&PB7Mem, GPIOB, GPIO_PIN_7);
+
 	button = newGPIO(&buttonMem, B1_GPIO_Port, B1_Pin);
 	printf_u("\rTimer Testing\r\n");
 }
@@ -78,6 +89,8 @@ static void testTIMdelay(void) {
 	}
 }
 
+//PWM Tester
+
 static void testPWM(void) {
 	timer1 = newTIM(&timer1Mem, &htim1, 1, TIM_16bit); //TIM1 belongs to APB2, HCLK/APB2 = 1
 	initTIM_PWM_Out(timer1, 10000, 10000); //max_cnt = 10,000; pwm_freq = 10k;
@@ -96,6 +109,7 @@ static void testPWM(void) {
 	double dc1, dc2, dc3, dc4;
 	while(1) {
 
+		//if button being pushed, pull-up active high
 		if(!gpioRead(button)) {
 
 			//Altering freq real-time
@@ -130,6 +144,8 @@ static void testPWM(void) {
 		timPwmWrite(timer1, TIM_CH4, 75.33);*/
 	}
 }
+
+//Input Capture Tester
 
 volatile int32_t ICval[2] = {0};
 volatile int32_t PulseWidth[2] = {0};
@@ -222,6 +238,82 @@ static void testPWM_Input(void) {
 }
 
 
+
+//Encoder Testers
+
+
+#define CW   // clock wise
+//#define CCW  // counter clock wise
+volatile uint8_t tmp = 0;
+//Timer interrupt driven encoder pulse emulation
+void timPE_IT_CallBack(TIM* instance) {
+	if(instance == timer10) {
+#ifdef CW
+		if(tmp == 0) gpioWrite(PB7, High);
+		else if(tmp == 1) gpioWrite(PB6, High);
+		else if(tmp == 2) gpioWrite(PB7, Low);
+		else if(tmp == 3) gpioWrite(PB6, Low);
+#endif
+
+#ifdef CCW
+		if(tmp == 0) gpioWrite(PB6, High);
+		else if(tmp == 1) gpioWrite(PB7, High);
+		else if(tmp == 2) gpioWrite(PB6, Low);
+		else if(tmp == 3) gpioWrite(PB7, Low);
+#endif
+		if(tmp == 3) tmp = 0;
+		else tmp++;
+	}
+}
+
+void testEncoder16bit(void) {
+	timer10 = newTIM(&timer10Mem, &htim10, 1, TIM_16bit);
+	initTIM_BasicCounting(timer10, 60, 1000000); // AutoReload at every 100 count, counting at 1000,000Hz = 1Mhz
+	timCountBegin_IT(timer10);
+
+	//Wire PB6 pin to TIM3 CH1 pin,
+	//     PB7 pin to TIM3 CH2 pin for experimenting
+
+	timer3 = newTIM(&timer3Mem, &htim3, 2, TIM_16bit); //TIM3 belongs to APB1, HCLK/APB2 = 2
+	initTIM_Enc(timer3);
+
+	//interrupt mode handles the counter overflow automatically, since 2^16 = 0xFFFF = ~ 30000 easily overflows
+	timEncBegin_IT(timer3);
+
+	while(1) {
+		if(!gpioRead(button)) timResetEnc(timer3);
+
+		printf_u("\r[%d]\r\n", timGetEncCNT(timer3));
+	}
+}
+
+void testEncoder32bit(void) {
+	timer10 = newTIM(&timer10Mem, &htim10, 1, TIM_16bit);
+
+	//For thi exp, TIM freq must <= 1Mhz, over clocking would cause system being locked within interrupt service routine
+	initTIM_BasicCounting(timer10, 1, 1000000); // AutoReload at every 1 count, counting at 1,000,000Hz = 1Mhz
+	timCountBegin_IT(timer10);
+
+	//Wire PB6 pin to TIM5 CH1 pin,
+	//     PB7 pin to TIM5 CH2 pin for experimenting
+
+	timer5 = newTIM(&timer5Mem, &htim5, 2, TIM_32bit); //TIM5 belongs to APB1, HCLK/APB2 = 2
+	initTIM_Enc(timer5);
+
+	/* Interrupt mode handles the counter overflow automatically, but 2^32 is very large, it takes hours for an encoder to overflow
+	 * Usually overflow handling is not needed for 32bit timer, just giving an example here for reference.
+	 * If not worrying about overflow, use timEncBegin() would suffice
+	 */
+	timEncBegin_IT(timer5);
+
+	while(1) {
+		if(!gpioRead(button)) timResetEnc(timer5);
+
+		printf_u("\r[%d,%d]\r\n", timGetOverFlowPart_32bit(timer5), timGetEncCNT(timer5));
+	}
+}
+
+
 void testTimer(void) {
 	setup();
 
@@ -237,8 +329,18 @@ void testTimer(void) {
 	//testIC();
 	UNUSED(testIC);
 
-	testPWM_Input();
-	//UNUSED(testPWM_Input);
+	//testPWM_Input();
+	UNUSED(testPWM_Input);
+
+	//testEncoder16bit();
+	UNUSED(testEncoder16bit);
+
+	testEncoder32bit();
+	//UNUSED(testEncoder32bit);
+}
+
+void Exception_Handler(const char* str) {
+	printf_u("\r%s\r\n",str);
 }
 
 

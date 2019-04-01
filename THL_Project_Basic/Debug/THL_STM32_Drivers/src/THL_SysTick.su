@@ -1,6 +1,5 @@
-THL_SysTick.c:14:6:initSysTime_TIM	8	static
-THL_SysTick.c:22:6:timSysT_IT_CallBack	0	static
-THL_SysTick.c:28:10:millis	0	static
-THL_SysTick.c:31:10:micros	8	static
-THL_SysTick.c:49:6:delay_us	16	static
-THL_SysTick.c:53:6:delay	16	static
+THL_SysTick.c:36:6:initSysTime_SysTick	0	static
+THL_SysTick.c:40:10:millis	8	static
+THL_SysTick.c:43:10:micros	16	static
+THL_SysTick.c:50:6:delay_us	16	static
+THL_SysTick.c:54:6:delay	16	static
