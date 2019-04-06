@@ -1,0 +1,4 @@
+THL_AdcTester.c:28:13:setup	8	static
+THL_AdcTester.c:69:13:testAdc_DMA	16	static
+THL_AdcTester.c:88:6:testAdc	8	static
+THL_AdcTester.c:103:6:Exception_Handler	8	static

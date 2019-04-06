@@ -3,5 +3,5 @@ THL_TimerTester.c:177:6:timIC_IT_CallBack	16	static
 THL_TimerTester.c:249:6:timPE_IT_CallBack	8	static
 THL_TimerTester.c:269:6:testEncoder16bit	8	static
 THL_TimerTester.c:290:6:testEncoder32bit	8	static
-THL_TimerTester.c:315:6:testTimer	8	static
-THL_TimerTester.c:340:6:Exception_Handler	8	static
+THL_TimerTester.c:317:6:testTimer	8	static
+THL_TimerTester.c:342:6:Exception_Handler	8	static

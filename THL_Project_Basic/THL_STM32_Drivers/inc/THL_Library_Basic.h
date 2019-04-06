@@ -9,6 +9,7 @@
 #include "THL_Timer.h"
 #include "THL_Usart.h"
 #include "THL_Utility.h"
+#include "THL_ADC.h"
 
 #endif
 

@@ -51,7 +51,7 @@ uint8_t* i2cReadReg(I2C* instance, uint16_t devAddress, uint16_t regAddress);
 
 
 
-/*==============================Interrupt Mode===============================*/
+/*==============================Interrupt Mode=============================*/
 void i2cWrite_IT(I2C* instance, uint16_t Mode);
 char* i2cRead_IT(I2C* instance, uint16_t Mode, uint16_t size);
 void i2cWriteReg_IT(I2C* instance, uint16_t devAddress, uint16_t regAddress, uint8_t byte);
@@ -60,7 +60,7 @@ uint8_t* i2cReadReg_IT(I2C* instance, uint16_t devAddress, uint16_t regAddress);
 
 
 
-/*==============================DMA Mode===============================*/
+/*==============================DMA Mode===================================*/
 void i2cWrite_DMA(I2C* instance, uint16_t Mode);
 char* i2cRead_DMA(I2C* instance, uint16_t Mode, uint16_t size);
 /*=========================================================================*/

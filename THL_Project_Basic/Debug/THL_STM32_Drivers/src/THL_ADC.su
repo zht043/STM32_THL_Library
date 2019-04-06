@@ -1,0 +1,14 @@
+THL_ADC.c:36:7:newADC	4	static
+THL_ADC.c:57:6:adcConvBegin	8	static
+THL_ADC.c:65:6:adcConvEnd	8	static
+THL_ADC.c:69:19:adcGetVal	16	static
+THL_ADC.c:88:6:adcConvBegin_IT	8	static
+THL_ADC.c:94:6:adcConvEnd_IT	8	static
+THL_ADC.c:99:6:adcRequestVal_IT	8	static
+THL_ADC.c:105:19:adcGetVal_IT	0	static
+THL_ADC.c:117:6:adcConvBegin_DMA	8	static
+THL_ADC.c:121:6:adcConvEnd_DMA	8	static
+THL_ADC.c:125:20:adcGetVal_DMA	0	static
+THL_ADC.c:135:10:adcGetNumChannel	0	static
+THL_ADC.c:159:13:adcConvCplt_IT_CallBack	0	static
+THL_ADC.c:144:6:HAL_ADC_ConvCpltCallback	16	static

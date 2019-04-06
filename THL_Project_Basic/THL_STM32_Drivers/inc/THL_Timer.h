@@ -99,6 +99,8 @@ void timCountEnd(TIM* instance);
 void timCountBegin_IT(TIM* instance);
 void timCountEnd_IT(TIM* instance);
 uint32_t timGetCount(TIM* instance);
+
+//Interrupt handler
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 __weak void timPE_IT_CallBack(TIM* instance);
 __weak void timSysT_IT_CallBack(TIM* instance);
@@ -127,6 +129,8 @@ void timSetIC_Polarity(TIM* instance, uint32_t channel, uint32_t ICpolarity);
 void timIcBegin_IT(TIM* instance, uint32_t channel);
 void timIcEnd_IT(TIM* instance, uint32_t channel);
 uint32_t timGetCapVal(TIM* instance, uint32_t channel);
+
+//Interrupt handler
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 __weak void timIC_IT_CallBack(TIM* instance, HAL_TIM_ActiveChannel active_channel);
 /*===========================================================================*/

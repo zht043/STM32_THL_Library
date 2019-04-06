@@ -4,7 +4,8 @@
 #include "THL_SpiTester.h"
 #include "PMW3901_Tester.h"
 #include "THL_TimerTester.h"
+#include "THL_AdcTester.h"
 void prj_main(void) {
-	testTimer();
+	testAdc();
 }
 
