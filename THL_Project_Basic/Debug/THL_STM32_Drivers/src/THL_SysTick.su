@@ -1,5 +1,0 @@
-THL_SysTick.c:36:6:initSysTime_SysTick	0	static
-THL_SysTick.c:40:10:millis	8	static
-THL_SysTick.c:43:10:micros	16	static
-THL_SysTick.c:50:6:delay_us	16	static
-THL_SysTick.c:54:6:delay	16	static

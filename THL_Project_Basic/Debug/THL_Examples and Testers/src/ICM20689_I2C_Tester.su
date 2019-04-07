@@ -1,4 +1,0 @@
-ICM20689_I2C_Tester.c:87:9:initICM20689	8	static
-ICM20689_I2C_Tester.c:125:6:getAccel	48	static
-ICM20689_I2C_Tester.c:145:9:getWhoAmI	8	static
-ICM20689_I2C_Tester.c:149:6:testICM20689	16	static

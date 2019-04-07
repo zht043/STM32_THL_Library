@@ -1,4 +1,0 @@
-THL_SysTick.c:19:17:millis	8	static
-THL_SysTick.c:22:17:micros	16	static
-THL_SysTick.c:25:6:delay_us	16	static
-THL_SysTick.c:29:6:delay	16	static
