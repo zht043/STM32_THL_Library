@@ -9,10 +9,15 @@ typedef struct{
 }GPIO;
 
 GPIO *newGPIO(GPIO* obj, GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
+
 void turnOn(GPIO* obj);
 void turnOff(GPIO* obj);
+
+
 void gpioWrite(GPIO* obj, uint8_t Bit);
 Bool gpioRead(GPIO* obj);
+
+
 void blink(GPIO* obj, uint32_t blkPeriod_ms);
 void toggle(GPIO* obj);
 

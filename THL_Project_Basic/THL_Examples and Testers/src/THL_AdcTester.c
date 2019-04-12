@@ -22,6 +22,7 @@ USART* system_console;
 
 GPIO led_mem;
 GPIO* led;
+
 GPIO button_mem;
 GPIO* button;
 
@@ -91,12 +92,12 @@ void testAdc(void) {
 	//testAdc_Polling();
 	UNUSED(testAdc_Polling);
 
-	//testAdc_IT();
-	UNUSED(testAdc_IT);
+	testAdc_IT();
+	//UNUSED(testAdc_IT);
 
 	//Most recommended approach for ADCs
-	testAdc_DMA();
-	//UNUSED(testAdc_DMA);
+	//testAdc_DMA();
+	UNUSED(testAdc_DMA);
 
 }
 
