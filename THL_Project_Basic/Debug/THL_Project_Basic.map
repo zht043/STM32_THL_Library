@@ -189,7 +189,6 @@ spi_cs              0x4               THL_Examples and Testers\src\PMW3901_Teste
 hi2c2               0x54              Src\main.o
 gyroFSScale         0x4               THL_Examples and Testers\src\MPU9150_I2C_Tester.o
 hdma_spi2_rx        0x60              Src\main.o
-esc1_mem            0x30              THL_Examples and Testers\src\ESC_Tester.o
 timer8_IC_fieldsMem
                     0x44              THL_Examples and Testers\src\THL_TimerTester.o
 YSTZmem             0x28              THL_Examples and Testers\src\PMW3901_Tester.o
@@ -230,14 +229,14 @@ adc2                0x4               THL_Examples and Testers\src\THL_AdcTester
 ActiveSPIs          0x28              THL_STM32_Drivers\src\THL_SPI.o
 hdma_i2c1_rx        0x60              Src\main.o
 spiBusMem           0xd8              THL_Examples and Testers\src\PMW3901_Tester.o
-esc1                0x4               THL_Examples and Testers\src\ESC_Tester.o
 serial_console      0xd8              THL_Examples and Testers\src\MPU9150_I2C_Tester.o
 PB7Mem              0x8               THL_Examples and Testers\src\THL_TimerTester.o
-timer1              0x4               THL_Examples and Testers\src\THL_TimerTester.o
+timer1              0x4               THL_Examples and Testers\src\ESC_Tester.o
 uart2               0xd8              THL_Examples and Testers\src\THL_UsartTesters.o
 spi_csMem           0x8               THL_Examples and Testers\src\PMW3901_Tester.o
 adc1_mem            0x3c              THL_Examples and Testers\src\THL_AdcTester.o
 led_mem             0x8               THL_Examples and Testers\src\THL_AdcTester.o
+timer1_mem          0x30              THL_Examples and Testers\src\ESC_Tester.o
 huart2              0x40              Src\main.o
 __lock___at_quick_exit_mutex
                     0x1               c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/../../../../arm-atollic-eabi/lib/armv7e-m/fpu\libc.a(lib_a-lock.o)
@@ -3444,7 +3443,7 @@ LOAD c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../l
  .igot.plt      0x2000067c        0x0 c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/armv7e-m/fpu/crtbegin.o
                 0x2000067c                . = ALIGN (0x4)
 
-.bss            0x2000067c      0x928 load address 0x08009084
+.bss            0x2000067c      0x924 load address 0x08009084
                 0x2000067c                _sbss = .
                 0x2000067c                __bss_start__ = _sbss
  *(.bss)
@@ -3503,9 +3502,9 @@ LOAD c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../l
                 0x20000b68                hdma_spi2_tx
                 0x20000bc8                htim7
  COMMON         0x20000c04       0x34 THL_Examples and Testers\src\ESC_Tester.o
-                0x20000c04                esc1_mem
-                0x20000c34                esc1
- COMMON         0x20000c38      0x194 THL_Examples and Testers\src\THL_TimerTester.o
+                0x20000c04                timer1
+                0x20000c08                timer1_mem
+ COMMON         0x20000c38      0x190 THL_Examples and Testers\src\THL_TimerTester.o
                 0x20000c38                timer7
                 0x20000c3c                timer3Mem
                 0x20000c6c                timer5Mem
@@ -3519,46 +3518,45 @@ LOAD c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../l
                 0x20000d54                PB7
                 0x20000d58                timer5
                 0x20000d5c                PB7Mem
-                0x20000d64                timer1
-                0x20000d68                timer1Mem
-                0x20000d98                timer3
-                0x20000d9c                timer8Mem
- COMMON         0x20000dcc       0x14 THL_STM32_Drivers\src\THL_ADC.o
-                0x20000dcc                ActiveADCs
- COMMON         0x20000de0       0x28 THL_STM32_Drivers\src\THL_I2C.o
-                0x20000de0                ActiveI2Cs
- COMMON         0x20000e08       0x64 THL_STM32_Drivers\src\THL_Timer.o
-                0x20000e08                ActiveTIMs
- COMMON         0x20000e6c      0x128 THL_STM32_Drivers\src\THL_Usart.o
-                0x20000e6c                DefaultUSART
-                0x20000f44                ActiveUSARTs
- COMMON         0x20000f94        0x4 c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/../../../../arm-atollic-eabi/lib/armv7e-m/fpu\libc.a(lib_a-reent.o)
-                0x20000f94                errno
- COMMON         0x20000f98        0x9 c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/../../../../arm-atollic-eabi/lib/armv7e-m/fpu\libc.a(lib_a-lock.o)
-                0x20000f98                __lock___atexit_recursive_mutex
-                0x20000f99                __lock___arc4random_mutex
-                0x20000f9a                __lock___env_recursive_mutex
-                0x20000f9b                __lock___sinit_recursive_mutex
-                0x20000f9c                __lock___malloc_recursive_mutex
-                0x20000f9d                __lock___at_quick_exit_mutex
-                0x20000f9e                __lock___dd_hash_mutex
-                0x20000f9f                __lock___tz_mutex
-                0x20000fa0                __lock___sfp_recursive_mutex
-                0x20000fa4                . = ALIGN (0x4)
- *fill*         0x20000fa1        0x3 
-                0x20000fa4                _ebss = .
-                0x20000fa4                __bss_end__ = _ebss
+                0x20000d64                timer1Mem
+                0x20000d94                timer3
+                0x20000d98                timer8Mem
+ COMMON         0x20000dc8       0x14 THL_STM32_Drivers\src\THL_ADC.o
+                0x20000dc8                ActiveADCs
+ COMMON         0x20000ddc       0x28 THL_STM32_Drivers\src\THL_I2C.o
+                0x20000ddc                ActiveI2Cs
+ COMMON         0x20000e04       0x64 THL_STM32_Drivers\src\THL_Timer.o
+                0x20000e04                ActiveTIMs
+ COMMON         0x20000e68      0x128 THL_STM32_Drivers\src\THL_Usart.o
+                0x20000e68                DefaultUSART
+                0x20000f40                ActiveUSARTs
+ COMMON         0x20000f90        0x4 c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/../../../../arm-atollic-eabi/lib/armv7e-m/fpu\libc.a(lib_a-reent.o)
+                0x20000f90                errno
+ COMMON         0x20000f94        0x9 c:/program files (x86)/atollic/truestudio for stm32 9.2.0/armtools/bin/../lib/gcc/arm-atollic-eabi/6.3.1/../../../../arm-atollic-eabi/lib/armv7e-m/fpu\libc.a(lib_a-lock.o)
+                0x20000f94                __lock___atexit_recursive_mutex
+                0x20000f95                __lock___arc4random_mutex
+                0x20000f96                __lock___env_recursive_mutex
+                0x20000f97                __lock___sinit_recursive_mutex
+                0x20000f98                __lock___malloc_recursive_mutex
+                0x20000f99                __lock___at_quick_exit_mutex
+                0x20000f9a                __lock___dd_hash_mutex
+                0x20000f9b                __lock___tz_mutex
+                0x20000f9c                __lock___sfp_recursive_mutex
+                0x20000fa0                . = ALIGN (0x4)
+ *fill*         0x20000f9d        0x3 
+                0x20000fa0                _ebss = .
+                0x20000fa0                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x20000fa4      0x600 load address 0x08009084
-                0x20000fa4                . = ALIGN (0x4)
-                0x20000fa4                PROVIDE (end, .)
+                0x20000fa0      0x600 load address 0x08009084
+                0x20000fa0                . = ALIGN (0x4)
+                0x20000fa0                PROVIDE (end, .)
                 [!provide]                PROVIDE (_end, .)
-                0x200011a4                . = (. + _Min_Heap_Size)
- *fill*         0x20000fa4      0x200 
-                0x200015a4                . = (. + _Min_Stack_Size)
- *fill*         0x200011a4      0x400 
-                0x200015a4                . = ALIGN (0x4)
+                0x200011a0                . = (. + _Min_Heap_Size)
+ *fill*         0x20000fa0      0x200 
+                0x200015a0                . = (. + _Min_Stack_Size)
+ *fill*         0x200011a0      0x400 
+                0x200015a0                . = ALIGN (0x4)
 
 /DISCARD/
  libc.a(*)
@@ -3919,7 +3917,7 @@ OUTPUT(THL_Project_Basic.elf elf32-littlearm)
  .debug_line    0x0000b82d      0x2f0 THL_STM32_Drivers\src\THL_Utility.o
  .debug_line    0x0000bb1d       0x7f startup\startup_stm32f446xx.o
 
-.debug_str      0x00000000     0x638d
+.debug_str      0x00000000     0x638a
  .debug_str     0x00000000      0xf6b Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal.o
                                0x102f (size before relaxing)
  .debug_str     0x00000f6b      0x67a Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_adc.o
@@ -3958,23 +3956,23 @@ OUTPUT(THL_Project_Basic.elf elf32-littlearm)
                                0x12d1 (size before relaxing)
  .debug_str     0x000057a5       0x45 Src\system_stm32f4xx.o
                                 0x7ff (size before relaxing)
- .debug_str     0x000057ea      0x1a1 THL_Examples and Testers\src\ESC_Tester.o
-                                0xc22 (size before relaxing)
- .debug_str     0x0000598b      0x165 THL_Examples and Testers\src\THL_AdcTester.o
+ .debug_str     0x000057ea      0x1a5 THL_Examples and Testers\src\ESC_Tester.o
+                                0xc26 (size before relaxing)
+ .debug_str     0x0000598f      0x165 THL_Examples and Testers\src\THL_AdcTester.o
                                 0xd91 (size before relaxing)
- .debug_str     0x00005af0      0x1f3 THL_Examples and Testers\src\THL_TimerTester.o
+ .debug_str     0x00005af4      0x1ec THL_Examples and Testers\src\THL_TimerTester.o
                                0x102f (size before relaxing)
- .debug_str     0x00005ce3       0xcb THL_STM32_Drivers\src\THL_ADC.o
+ .debug_str     0x00005ce0       0xcb THL_STM32_Drivers\src\THL_ADC.o
                                 0xc43 (size before relaxing)
- .debug_str     0x00005dae       0x50 THL_STM32_Drivers\src\THL_GPIO.o
+ .debug_str     0x00005dab       0x50 THL_STM32_Drivers\src\THL_GPIO.o
                                 0x782 (size before relaxing)
- .debug_str     0x00005dfe      0x13f THL_STM32_Drivers\src\THL_I2C.o
+ .debug_str     0x00005dfb      0x13f THL_STM32_Drivers\src\THL_I2C.o
                                 0xf74 (size before relaxing)
- .debug_str     0x00005f3d      0x287 THL_STM32_Drivers\src\THL_Timer.o
+ .debug_str     0x00005f3a      0x287 THL_STM32_Drivers\src\THL_Timer.o
                                0x10ca (size before relaxing)
- .debug_str     0x000061c4      0x185 THL_STM32_Drivers\src\THL_Usart.o
+ .debug_str     0x000061c1      0x185 THL_STM32_Drivers\src\THL_Usart.o
                                 0xd88 (size before relaxing)
- .debug_str     0x00006349       0x44 THL_STM32_Drivers\src\THL_Utility.o
+ .debug_str     0x00006346       0x44 THL_STM32_Drivers\src\THL_Utility.o
                                 0x6d4 (size before relaxing)
 
 .comment        0x00000000       0x7c

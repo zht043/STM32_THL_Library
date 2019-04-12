@@ -17,9 +17,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   6 .data         0000067c  20000000  08008a08  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  7 .bss          00000928  2000067c  08009084  0002067c  2**2
+  7 .bss          00000924  2000067c  08009084  0002067c  2**2
                   ALLOC
-  8 ._user_heap_stack 00000600  20000fa4  08009084  00020fa4  2**0
+  8 ._user_heap_stack 00000600  20000fa0  08009084  00020fa0  2**0
                   ALLOC
   9 .ARM.attributes 00000030  00000000  00000000  0002067c  2**0
                   CONTENTS, READONLY
@@ -35,13 +35,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  15 .debug_line   0000bb9c  00000000  00000000  00063fc0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_str    0000638d  00000000  00000000  0006fb5c  2**0
+ 16 .debug_str    0000638a  00000000  00000000  0006fb5c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .comment      0000007c  00000000  00000000  00075ee9  2**0
+ 17 .comment      0000007c  00000000  00000000  00075ee6  2**0
                   CONTENTS, READONLY
- 18 .debug_frame  00004e74  00000000  00000000  00075f68  2**2
+ 18 .debug_frame  00004e74  00000000  00000000  00075f64  2**2
                   CONTENTS, READONLY, DEBUGGING
- 19 .stabstr      000000df  00000000  00000000  0007addc  2**0
+ 19 .stabstr      000000df  00000000  00000000  0007add8  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -11534,9 +11534,9 @@ void SystemInit(void)
  8004e94:	00000000 	.word	0x00000000
 
 08004e98 <setEscSpeed>:
-TIM esc1_mem;
-TIM* esc1;
 
+
+#define esc1 timer1, TIM_CH1
 
 
 void setEscSpeed(TIM* esc, uint32_t channel, double percent) {
@@ -11564,7 +11564,7 @@ void setEscSpeed(TIM* esc, uint32_t channel, double percent) {
 
 void testEsc(void) {
  8004ec8:	b508      	push	{r3, lr}
-	esc1 = newTIM(&esc1_mem, &htim1, 1, TIM_16bit);
+	timer1 = newTIM(&timer1_mem, &htim1, 1, TIM_16bit);
  8004eca:	2300      	movs	r3, #0
  8004ecc:	2201      	movs	r2, #1
  8004ece:	4914      	ldr	r1, [pc, #80]	; (8004f20 <testEsc+0x58>)
@@ -11572,29 +11572,29 @@ void testEsc(void) {
  8004ed2:	f000 f9af 	bl	8005234 <newTIM>
  8004ed6:	4c14      	ldr	r4, [pc, #80]	; (8004f28 <testEsc+0x60>)
  8004ed8:	6020      	str	r0, [r4, #0]
-	initTIM_PWM_Out(esc1, 10000, 50); //max_cnt = 10,000; pwm_freq = 500hz;
+	initTIM_PWM_Out(timer1, 10000, 50); //max_cnt = 10,000; pwm_freq = 500hz;
  8004eda:	2232      	movs	r2, #50	; 0x32
  8004edc:	f242 7110 	movw	r1, #10000	; 0x2710
  8004ee0:	f000 faa2 	bl	8005428 <initTIM_PWM_Out>
-	timPwmGenBegin(esc1, TIM_CH1);
+	timPwmGenBegin(timer1, TIM_CH1);
  8004ee4:	2100      	movs	r1, #0
  8004ee6:	6820      	ldr	r0, [r4, #0]
  8004ee8:	f000 faa6 	bl	8005438 <timPwmGenBegin>
-	timPwmGenBegin(esc1, TIM_CH2);
+	timPwmGenBegin(timer1, TIM_CH2);
  8004eec:	2104      	movs	r1, #4
  8004eee:	6820      	ldr	r0, [r4, #0]
  8004ef0:	f000 faa2 	bl	8005438 <timPwmGenBegin>
-	timPwmGenBegin(esc1, TIM_CH3);
+	timPwmGenBegin(timer1, TIM_CH3);
  8004ef4:	2108      	movs	r1, #8
  8004ef6:	6820      	ldr	r0, [r4, #0]
  8004ef8:	f000 fa9e 	bl	8005438 <timPwmGenBegin>
-	timPwmGenBegin(esc1, TIM_CH4);
+	timPwmGenBegin(timer1, TIM_CH4);
  8004efc:	210c      	movs	r1, #12
  8004efe:	6820      	ldr	r0, [r4, #0]
  8004f00:	f000 fa9a 	bl	8005438 <timPwmGenBegin>
 
 	while(1) {
-		setEscSpeed(esc1, TIM_CH1, 20.00f);
+		setEscSpeed(esc1, 20.00f);
  8004f04:	ed9f 0b04 	vldr	d0, [pc, #16]	; 8004f18 <testEsc+0x50>
  8004f08:	2100      	movs	r1, #0
  8004f0a:	4b07      	ldr	r3, [pc, #28]	; (8004f28 <testEsc+0x60>)
@@ -11605,8 +11605,8 @@ void testEsc(void) {
  8004f18:	00000000 	.word	0x00000000
  8004f1c:	40340000 	.word	0x40340000
  8004f20:	20000a8c 	.word	0x20000a8c
- 8004f24:	20000c04 	.word	0x20000c04
- 8004f28:	20000c34 	.word	0x20000c34
+ 8004f24:	20000c08 	.word	0x20000c08
+ 8004f28:	20000c04 	.word	0x20000c04
 
 08004f2c <Exception_Handler>:
 	//testAdc_DMA();
@@ -11927,7 +11927,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
  8005124:	e7e4      	b.n	80050f0 <HAL_ADC_ConvCpltCallback+0x8>
 }
  8005126:	bd70      	pop	{r4, r5, r6, pc}
- 8005128:	20000dcc 	.word	0x20000dcc
+ 8005128:	20000dc8 	.word	0x20000dc8
  800512c:	200006aa 	.word	0x200006aa
 
 08005130 <turnOn>:
@@ -12006,7 +12006,7 @@ void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 }
  800518a:	bd38      	pop	{r3, r4, r5, pc}
  800518c:	200006ac 	.word	0x200006ac
- 8005190:	20000de0 	.word	0x20000de0
+ 8005190:	20000ddc 	.word	0x20000ddc
 
 08005194 <HAL_I2C_SlaveTxCpltCallback>:
 void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
@@ -12035,7 +12035,7 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 }
  80051be:	bd38      	pop	{r3, r4, r5, pc}
  80051c0:	200006ac 	.word	0x200006ac
- 80051c4:	20000de0 	.word	0x20000de0
+ 80051c4:	20000ddc 	.word	0x20000ddc
 
 080051c8 <i2cRC_IT_CallBack>:
 	 UNUSED(instance);
@@ -12072,7 +12072,7 @@ void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
 }
  80051f6:	bd38      	pop	{r3, r4, r5, pc}
  80051f8:	200006ac 	.word	0x200006ac
- 80051fc:	20000de0 	.word	0x20000de0
+ 80051fc:	20000ddc 	.word	0x20000ddc
 
 08005200 <HAL_I2C_SlaveRxCpltCallback>:
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
@@ -12101,7 +12101,7 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
 }
  800522a:	bd38      	pop	{r3, r4, r5, pc}
  800522c:	200006ac 	.word	0x200006ac
- 8005230:	20000de0 	.word	0x20000de0
+ 8005230:	20000ddc 	.word	0x20000ddc
 
 08005234 <newTIM>:
   */
@@ -12153,7 +12153,7 @@ TIM *newTIM(TIM* instance, TIM_HandleTypeDef *htim, uint32_t APBx_DivFactor, TIM
  8005274:	4770      	bx	lr
  8005276:	bf00      	nop
  8005278:	200006ae 	.word	0x200006ae
- 800527c:	20000e08 	.word	0x20000e08
+ 800527c:	20000e04 	.word	0x20000e04
 
 08005280 <timSetARR>:
 
@@ -12368,7 +12368,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 }
  800538e:	bd38      	pop	{r3, r4, r5, pc}
  8005390:	200006ae 	.word	0x200006ae
- 8005394:	20000e08 	.word	0x20000e08
+ 8005394:	20000e04 	.word	0x20000e04
 
 08005398 <timSetPwmFrequency>:
 Bool timSetPwmFrequency(TIM* instance, uint32_t max_count, uint32_t pwm_frequency) {
@@ -12776,7 +12776,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
  80056b8:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
  80056ba:	bf00      	nop
  80056bc:	200006ae 	.word	0x200006ae
- 80056c0:	20000e08 	.word	0x20000e08
+ 80056c0:	20000e04 	.word	0x20000e04
 
 080056c4 <usartWrite>:
 /*=========================================================================*/
@@ -12875,7 +12875,7 @@ void printf_u(Format_Param) {
  8005756:	b004      	add	sp, #16
  8005758:	4770      	bx	lr
  800575a:	bf00      	nop
- 800575c:	20000e70 	.word	0x20000e70
+ 800575c:	20000e6c 	.word	0x20000e6c
 
 08005760 <throwException>:
 
@@ -12974,7 +12974,7 @@ LoopFillZerobss:
   ldr  r2, =_sbss
  80057b0:	2000067c 	.word	0x2000067c
   ldr  r3, = _ebss
- 80057b4:	20000fa4 	.word	0x20000fa4
+ 80057b4:	20000fa0 	.word	0x20000fa0
 
 080057b8 <CAN1_RX0_IRQHandler>:
  * @retval None       
@@ -16432,13 +16432,13 @@ Infinite_Loop:
  8007938:	4801      	ldr	r0, [pc, #4]	; (8007940 <__malloc_lock+0x8>)
  800793a:	f000 bcaf 	b.w	800829c <__retarget_lock_acquire_recursive>
  800793e:	bf00      	nop
- 8007940:	20000f9c 	.word	0x20000f9c
+ 8007940:	20000f98 	.word	0x20000f98
 
 08007944 <__malloc_unlock>:
  8007944:	4801      	ldr	r0, [pc, #4]	; (800794c <__malloc_unlock+0x8>)
  8007946:	f000 bcaa 	b.w	800829e <__retarget_lock_release_recursive>
  800794a:	bf00      	nop
- 800794c:	20000f9c 	.word	0x20000f9c
+ 800794c:	20000f98 	.word	0x20000f98
 
 08007950 <_Balloc>:
  8007950:	b570      	push	{r4, r5, r6, lr}
@@ -17036,7 +17036,7 @@ Infinite_Loop:
  8007f06:	b103      	cbz	r3, 8007f0a <_sbrk_r+0x1a>
  8007f08:	602b      	str	r3, [r5, #0]
  8007f0a:	bd38      	pop	{r3, r4, r5, pc}
- 8007f0c:	20000f94 	.word	0x20000f94
+ 8007f0c:	20000f90 	.word	0x20000f90
 
 08007f10 <__ssprint_r>:
  8007f10:	6893      	ldr	r3, [r2, #8]
@@ -17755,7 +17755,7 @@ Infinite_Loop:
  80085e4:	601a      	str	r2, [r3, #0]
  80085e6:	4770      	bx	lr
  80085e8:	200006e4 	.word	0x200006e4
- 80085ec:	20000fa4 	.word	0x20000fa4
+ 80085ec:	20000fa0 	.word	0x20000fa0
 
 080085f0 <_init>:
  80085f0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}

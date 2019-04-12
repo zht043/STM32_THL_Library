@@ -8,9 +8,11 @@
 
 extern TIM_HandleTypeDef htim1;
 
-TIM esc1_mem;
-TIM* esc1;
+TIM timer1_mem;
+TIM* timer1;
 
+
+#define esc1 timer1, TIM_CH1
 
 
 void setEscSpeed(TIM* esc, uint32_t channel, double percent) {
@@ -19,15 +21,15 @@ void setEscSpeed(TIM* esc, uint32_t channel, double percent) {
 }
 
 void testEsc(void) {
-	esc1 = newTIM(&esc1_mem, &htim1, 1, TIM_16bit);
-	initTIM_PWM_Out(esc1, 10000, 50); //max_cnt = 10,000; pwm_freq = 500hz;
-	timPwmGenBegin(esc1, TIM_CH1);
-	timPwmGenBegin(esc1, TIM_CH2);
-	timPwmGenBegin(esc1, TIM_CH3);
-	timPwmGenBegin(esc1, TIM_CH4);
+	timer1 = newTIM(&timer1_mem, &htim1, 1, TIM_16bit);
+	initTIM_PWM_Out(timer1, 10000, 50); //max_cnt = 10,000; pwm_freq = 500hz;
+	timPwmGenBegin(timer1, TIM_CH1);
+	timPwmGenBegin(timer1, TIM_CH2);
+	timPwmGenBegin(timer1, TIM_CH3);
+	timPwmGenBegin(timer1, TIM_CH4);
 
 	while(1) {
-		setEscSpeed(esc1, TIM_CH1, 20.00f);
+		setEscSpeed(esc1, 20.00f);
 	}
 
 }
