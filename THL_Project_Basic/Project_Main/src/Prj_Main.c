@@ -5,7 +5,13 @@
 #include "PMW3901_Tester.h"
 #include "THL_TimerTester.h"
 #include "THL_AdcTester.h"
+
+extern UART_HandleTypeDef huart2;
+
 void prj_main(void) {
-	testAdc();
+	newMainUSART(&huart2);
+	while(1) {
+		printf_u("\rHello World!\r\n");
+	}
 }
 
