@@ -1,2 +1,2 @@
-ESC_Tester.c:18:6:setEscSpeed	16	static
-ESC_Tester.c:23:6:testEsc	8	static
+ESC_Tester.c:20:6:setEscSpeed	16	static
+ESC_Tester.c:25:6:testEsc	8	static

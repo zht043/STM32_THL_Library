@@ -7,6 +7,6 @@
 #include "THL_AdcTester.h"
 #include "ESC_Tester.h"
 void prj_main(void) {
-	testEsc();
+	testSpi();
 }
 

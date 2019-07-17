@@ -110,6 +110,7 @@ static void testTwoNucleoBoardComm(void) {
 #endif
 }
 
+
 //Test with a Logic Analyzer
 static void testByteWiseReadWrite(void) {
 	setup();
@@ -149,6 +150,8 @@ static void testByteWiseReadWrite(void) {
 		spiReadWriteByte(spiBus, SPI_ReadMode(regAddrB));
 		spiReadWriteByte(spiBus, byteB);
 
+		/*
+
 		spiReadWriteByte_IT(spiBus, SPI_WriteMode(regAddrA));
 		while(spiBus->Status != Completed);
 		spiReadWriteByte_IT(spiBus, byteA);
@@ -158,6 +161,8 @@ static void testByteWiseReadWrite(void) {
 		while(spiBus->Status != Completed);
 		spiReadWriteByte_DMA(spiBus, byteB);
 		while(spiBus->Status != Completed);
+
+		*/
 
 		spiEndDevice(spi_cs);
 

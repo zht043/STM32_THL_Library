@@ -13,6 +13,8 @@ TIM* timer1;
 
 
 #define esc1 timer1, TIM_CH1
+#define esc2 timer1, TIM_CH2
+
 
 
 void setEscSpeed(TIM* esc, uint32_t channel, double percent) {
